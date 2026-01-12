@@ -1,1 +1,28 @@
 @import "tailwindcss";
+
+:root {
+  /* ===== Brand Primary (Wine / Berry) ===== */
+  --color-primary: #8E1D4F;        /* refined version of #9C0F48 */
+  --color-primary-hover: #5A142B;  /* inspired by #470D21, smoother */
+
+  /* ===== Secondary (Warm Food Orange) ===== */
+  --color-secondary: #E08A45;      /* refined #D67D3E (less harsh) */
+  --color-secondary-hover: #B8612E;
+
+  /* ===== Backgrounds ===== */
+  --color-background: #FBEEE4;     /* refined #F9E4D4 */
+  --color-surface: #FFF7F1;        /* cards / sections */
+
+  /* ===== Accents ===== */
+  --color-accent: #C94A3A;         /* warm food accent (derived mix) */
+  --color-accent-soft: #F3C2A6;
+
+  /* ===== Text ===== */
+  --color-text-primary: #3A0B1C;   /* deep readable text */
+  --color-text-secondary: #7A3A52;
+}
+
+
+::-webkit-scrollbar{
+  width: 2px;
+}

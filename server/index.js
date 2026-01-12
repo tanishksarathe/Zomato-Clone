@@ -2,17 +2,35 @@ import dotenv from "dotenv";
 dotenv.config();
 import express from "express";
 import connectDB from "./src/config/db.js";
+import cors from "cors";
+import authRouter from "./src/routes/routes.js";
+import morgan from "morgan";
 
-const app = express();  // main server
+const app = express(); // main server
+
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+  })
+);
 
 app.use(express.json());
 
-// app.use("/auth", authRouter);
+app.use(morgan("dev"));
+
+app.use("/auth", authRouter);
 
 const PORT = process.env.PORT || 3000;
 
 app.get("/", (req, res) => {
   res.json({ message: "Server is sendig response" });
+});
+
+app.use((err, req, res, next) => {
+  const ErrorMessage = err.message || "Something went wrong";
+  const statusCode = err.statusCode || 500;
+
+  res.status(statusCode).json({ message: ErrorMessage });
 });
 
 app.listen(PORT, () => {
