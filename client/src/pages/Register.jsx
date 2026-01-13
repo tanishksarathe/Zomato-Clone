@@ -2,10 +2,13 @@ import { User, Mail, Phone, Lock, Send, XCircle } from "lucide-react";
 import { useState } from "react";
 import api from "../config/API";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
   const [loading, setLoading] = useState(false);
   const [validationError, setValidationError] = useState({});
+
+  const navigate = useNavigate();
 
   const [details, setDetails] = useState({
     fullname: "",
@@ -62,7 +65,7 @@ const Register = () => {
       toast.success(response.data.message);
 
     } catch (error) {
-      toast.error(error);
+      toast.error(error.response.data.message);
     } finally {
       handleReset();
       setLoading(false);
@@ -109,7 +112,7 @@ const Register = () => {
 
         {/* Form */}
         <form
-          className="space-y-5"
+          className="space-y-5 mb-5"
           onSubmit={handleSubmit}
           onReset={handleReset}
         >
@@ -145,6 +148,9 @@ const Register = () => {
                 }}
               />
             </div>
+            <div className="text-red-600 text-[12px]">
+              {validationError && validationError.fullname}
+            </div>
           </div>
 
           {/* Email */}
@@ -177,6 +183,9 @@ const Register = () => {
                 style={{ color: "var(--color-text-primary)" }}
               />
             </div>
+            <div className="text-red-600 text-[12px]">
+              {validationError && validationError.email}
+            </div>
           </div>
 
           {/* Phone */}
@@ -200,7 +209,7 @@ const Register = () => {
                 style={{ color: "var(--color-secondary)" }}
               />
               <input
-                type="tel"
+                type="text"
                 name="phone"
                 placeholder="Enter your phone number"
                 value={details.phone}
@@ -208,6 +217,9 @@ const Register = () => {
                 className="bg-transparent w-full outline-none"
                 style={{ color: "var(--color-text-primary)" }}
               />
+            </div>
+            <div className="text-red-600 text-[12px]">
+              {validationError && validationError.phone}
             </div>
           </div>
           {/* Password */}
@@ -239,6 +251,9 @@ const Register = () => {
                 className="bg-transparent w-full outline-none"
                 style={{ color: "var(--color-text-primary)" }}
               />
+            </div>
+            <div className="text-red-600 text-[12px]">
+              {validationError && validationError.password}
             </div>
           </div>
 
@@ -276,6 +291,7 @@ const Register = () => {
             </button>
           </div>
         </form>
+          <div className="text-center">Already have an account ? <button className="text-blue-700" onClick={() => navigate('/login')}>Login</button></div>
       </div>
     </div>
   );
