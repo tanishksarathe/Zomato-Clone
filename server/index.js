@@ -5,6 +5,7 @@ import connectDB from "./src/config/db.js";
 import cors from "cors";
 import authRouter from "./src/routes/routes.js";
 import morgan from "morgan";
+import contactRouter from './src/routes/publicRoutes.js'
 
 const app = express(); // main server
 
@@ -18,7 +19,8 @@ app.use(express.json());
 
 app.use(morgan("dev"));
 
-app.use("/auth", authRouter);
+app.use("/auth", authRouter); // Role based access control /auth, /restaurant, /rider, /customer
+app.use("/public", contactRouter);
 
 const PORT = process.env.PORT || 3000;
 

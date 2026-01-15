@@ -8,7 +8,7 @@ const contactSchema = mongoose.Schema(
     },
     email: {
       type: String,
-      required: true,                                               
+      required: true,
     },
     subject: {
       type: String,
@@ -19,7 +19,8 @@ const contactSchema = mongoose.Schema(
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
+  // { autoIndex: false }
 );
 
 const Contact = mongoose.model("Contact", contactSchema);

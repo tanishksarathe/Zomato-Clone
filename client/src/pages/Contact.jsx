@@ -24,7 +24,7 @@ const Contact = () => {
     setLoading(true);
 
     try {
-      const response = await api.post("/auth/contactus", messageData);
+    const response = await api.post("/public/contactus", messageData);
 
       console.log(response.data);
 
