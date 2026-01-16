@@ -58,9 +58,9 @@ const Login = () => {
 
     try {
       const response = await api.post("/auth/login", details);
-
       console.log(response.data);
       toast.success("Login Successful");
+      navigate('/user-dashboard');
     } catch (error) {
       console.log(error);
       toast.error(error?.response?.data?.message || "Unknown error");

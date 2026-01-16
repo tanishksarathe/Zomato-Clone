@@ -6,6 +6,7 @@ import Contact from "./pages/Contact";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import {Toaster} from 'react-hot-toast';
+import UserDashboard from "./pages/Dashboards/UserDashboard";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/user-dashboard" element={<UserDashboard />} />
         </Routes>
       </BrowserRouter>
     </>
