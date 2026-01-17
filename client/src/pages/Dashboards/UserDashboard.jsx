@@ -6,17 +6,22 @@ import UserProfile from "../../components/userDashboard/UserProfile";
 import UserOrder from "../../components/userDashboard/UserOrder";
 import UserTransactions from "../../components/userDashboard/UserTransactions";
 import UserHelpdesk from "../../components/userDashboard/UserHelpdesk";
+import { Menu } from "lucide-react";
 
 const UserDashboard = () => {
+ 
   const [active, setActive] = useState("overview");
+  const [collapsed, setCollapsed] = useState(true);
 
   return (
     <>
       <div className="flex w-full h-[86vh]">
-        <div className="border border-green-500 w-1/7 bg-(--color-accent-soft)">
-          <SidebarDashboard active={active} setActive={setActive} />
+        <div className={`border border-green-500 transition-all scroll-smooth ${collapsed ? "w-1/20" : "w-2/10"} bg-(--color-accent-soft)`}>
+    
+        <SidebarDashboard collapsed={collapsed} setCollapsed={setCollapsed}  active={active} setActive={setActive} />
+        
         </div>
-        <div className="border border-red-500 w-6/7">
+        <div className={`border border-red-500 ${collapsed ? "w-19/20" : "w-8/10"}`}>
           {active === "overview" && <UserOverview />}
           {active === "profile" && <UserProfile />}
           {active === "order" && <UserOrder />}
