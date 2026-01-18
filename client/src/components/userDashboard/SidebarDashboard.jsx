@@ -1,30 +1,79 @@
-import { HandHelping, Headset, Menu, ScanLine, ShoppingBag, Target, UserRoundPen } from 'lucide-react'
-import React from 'react'
+import {
+  HandHelping,
+  Headset,
+  Menu,
+  ScanLine,
+  ShoppingBag,
+  SquareMenu,
+  Target,
+  UserRoundPen,
+} from "lucide-react";
+import React from "react";
 
-const SidebarDashboard = ({active, setActive, collapsed, setCollapsed}) => {
+const SidebarDashboard = ({ active, setActive, collapsed, setCollapsed }) => {
+
+
+  const list = [
+    {
+      key: "overview",
+      icon: <Target size={15} />,
+      title : "Overview",
+    },
+    {
+      key: "profile",
+      icon: <UserRoundPen size={15} />,
+      title : "Profile",
+    },
+    {
+      key: "order",
+      icon: <ShoppingBag size={15} />,
+      title : "Orders",
+    },
+    {
+      key: "transaction",
+      icon: <ScanLine size={15} />,
+      title : "Transactions",
+    },
+    {
+      key: "help",
+      icon: <Headset size={15} />,
+      title : "Help Desk",
+    },
+  ]
+
   return (
     <>
-     <div>
-        
-        <div className={`p-3 font-bold pb-3 border-b flex text-xl justify-start items-center gap-2`}><button onClick={() => setCollapsed(!collapsed)} className={`flex ${collapsed ? `mx-auto p-1.5` :""}`}><Menu size={15}/></button> {collapsed ? "" : "User Dashboard"}</div>
-    
-        <div className='flex flex-col p-3 gap-3 font-semibold'>
-
-            <button onClick={() => setActive("overview")} className={`flex gap-3 items-center hover:text-(--color-text-primary) p-2 rounded-xl ${collapsed ? `mx-auto` :""} ${(active === "overview") ? 'bg-(--color-surface)':'transition-all hover:scale-105'}`}><Target size={15}/> {collapsed ? "" : "Overview"}</button>
-
-            <button onClick={() => setActive("profile")} className={`flex gap-3 items-center hover:text-(--color-text-primary) p-2 rounded-xl ${collapsed ? `mx-auto` :""} ${(active === "profile") ? 'bg-(--color-surface)':'transition-all hover:scale-105'}`}><UserRoundPen size={15}/> {collapsed ? "" : "Profile"}</button>
-
-            <button onClick={() => setActive("order")} className={`flex gap-3 items-center hover:text-(--color-text-primary) p-2 rounded-xl ${collapsed ? `mx-auto` :""} ${(active === "order") ? 'bg-(--color-surface)':'transition-all hover:scale-105'}`}><ShoppingBag size={15}/>{collapsed ? "" : "Orders"}</button>
-
-            <button onClick={() => setActive("transaction")} className={`flex gap-3 items-center hover:text-(--color-text-primary) p-2 rounded-xl ${collapsed ? `mx-auto` :""} ${(active === "transaction") ? 'bg-(--color-surface)':'transition-all hover:scale-105'}`}><ScanLine size={15}/>{collapsed ? "" : "Transactions"}</button>
-
-            <button onClick={() => setActive("help")} className={`flex gap-3 items-center hover:text-(--color-text-primary) p-2 rounded-xl ${collapsed ? `mx-auto` :""} ${(active === "help") ? 'bg-(--color-surface)':'transition-all hover:scale-105'}`}><Headset size={15} />{collapsed ? "" : "Help Desk"}</button>
-
+      <div className="shadow-2xl rounded-xl mt-1 ml-1 bg-(--color-accent-soft)">
+        <div
+          className={`p-3 text-nowrap font-bold pb-3 border-b flex text-xl justify-start items-center gap-2`}
+        >
+          <button
+            onClick={() => setCollapsed(!collapsed)}
+            className={`flex ${collapsed ? `mx-auto p-1.5` : ""}`}
+          >
+            <SquareMenu size={15} />
+          </button>{" "}
+          {collapsed ? "" : "User Dashboard"}
         </div>
 
-        </div> 
-    </>
-  )
-}
+        <div className="flex flex-col p-3 h-70 gap-3 font-semibold">
 
-export default SidebarDashboard
+          {
+            list.map((item, idx)=> (
+              <button key={idx}
+            onClick={() => setActive(item.key)}
+            className={`flex gap-3 h-12 text-nowrap overflow-hidden items-center hover:text-(--color-text-primary) p-2 rounded-xl ${collapsed ? `mx-auto` : ""} ${active === item.key ? "bg-(--color-surface)" : "transition-all hover:scale-105"}`}
+          >
+            {item.icon} {collapsed ? "" : item.title}
+          </button>
+
+            ))
+          }
+
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default SidebarDashboard;

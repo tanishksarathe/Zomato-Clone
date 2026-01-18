@@ -16,12 +16,12 @@ const UserDashboard = () => {
   return (
     <>
       <div className="flex w-full h-[86vh]">
-        <div className={`border border-green-500 transition-all scroll-smooth ${collapsed ? "w-1/20" : "w-2/10"} bg-(--color-accent-soft)`}>
+        <div className={`transition-all duration-200 scroll-smooth ${collapsed ? "w-1/20" : "w-2/10"}`}>
     
         <SidebarDashboard collapsed={collapsed} setCollapsed={setCollapsed}  active={active} setActive={setActive} />
         
         </div>
-        <div className={`border border-red-500 ${collapsed ? "w-19/20" : "w-8/10"}`}>
+        <div className={`${collapsed ? "w-19/20" : "w-8/10"}`}>
           {active === "overview" && <UserOverview />}
           {active === "profile" && <UserProfile />}
           {active === "order" && <UserOrder />}
