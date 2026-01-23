@@ -3,24 +3,28 @@ dotenv.config();
 import express from "express";
 import connectDB from "./src/config/db.js";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import authRouter from "./src/routes/routes.js";
 import morgan from "morgan";
-import contactRouter from './src/routes/publicRoutes.js'
+import contactRouter from "./src/routes/publicRoutes.js";
+import userRouter from "./src/routes/userRouter.js";
 
 const app = express(); // main server
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
-  })
+    origin: process.env.CLIENT_URL,
+    credentials:true,
+  }),
 );
 
 app.use(express.json());
-
+app.use(cookieParser())
 app.use(morgan("dev"));
 
 app.use("/auth", authRouter); // Role based access control /auth, /restaurant, /rider, /customer
 app.use("/public", contactRouter);
+app.use("/user", userRouter);
 
 const PORT = process.env.PORT || 3000;
 

@@ -1,10 +1,12 @@
 import { Lock, Mail, Send } from "lucide-react";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
-import api from '../config/API.jsx'
+import api from "../config/API.jsx";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext.jsx";
 
 const Login = () => {
+  const { user, setUser, isLogin, setIsLogin } = useAuth();
 
   const [details, setDetails] = useState({
     email: "",
@@ -21,7 +23,7 @@ const Login = () => {
 
     if (
       !/^[\w\.]+@(gmail|outlook|ricr|yahoo)\.(com|in|co.in)$/.test(
-        details.email
+        details.email,
       )
     ) {
       Error.email = "Use Proper Email Format";
@@ -32,25 +34,23 @@ const Login = () => {
     return Object.keys(Error).length > 0 ? false : true;
   };
 
-    const handleReset = () => {
+  const handleReset = () => {
     setDetails({
       email: "",
       password: "",
     });
   };
 
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setDetails((prev) => ({ ...prev, [name]: value }));
   };
 
-
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-     if (!validate()) {
+    if (!validate()) {
       setLoading(false);
       toast.error("Fill the from correctly");
       return;
@@ -59,17 +59,22 @@ const Login = () => {
     try {
       const response = await api.post("/auth/login", details);
       console.log(response.data);
+      setUser(response.data.data);
+      setIsLogin(true);
+      sessionStorage.setItem(
+        "GrabMyMeal User",
+        JSON.stringify(response.data.data),
+      );
       toast.success("Login Successful");
-      navigate('/user-dashboard');
+      navigate("/user-dashboard");
     } catch (error) {
       console.log(error);
       toast.error(error?.response?.data?.message || "Unknown error");
     } finally {
-      handleChange();
+      handleReset();
       setLoading(false);
     }
   };
-
 
   return (
     <div
@@ -193,7 +198,15 @@ const Login = () => {
             </button>
           </div>
         </form>
-            <div className="text-center">Don't have an account ? <button className="text-blue-700" onClick={() => navigate('/register')}>SignUp</button></div>
+        <div className="text-center">
+          Don't have an account ?{" "}
+          <button
+            className="text-blue-700"
+            onClick={() => navigate("/register")}
+          >
+            SignUp
+          </button>
+        </div>
       </div>
     </div>
   );

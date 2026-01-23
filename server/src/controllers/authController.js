@@ -1,5 +1,6 @@
 import User from "../models/userModel.js";
 import bcrypt from "bcrypt";
+import { genToken } from "../utils/authToken.js";
 
 export const userRegistration = async (req, res, next) => {
   try {
@@ -66,6 +67,10 @@ export const userLogin = async (req, res, next) => {
       error.statusCode = 402;
       return next(error);
     }
+
+    //token is generated here
+
+    await genToken(existingUser, res);
 
     res
       .status(200)

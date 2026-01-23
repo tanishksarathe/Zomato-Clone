@@ -1,7 +1,9 @@
 import logo from "../assets/ChatGPT Image Jan 11, 2026, 05_46_29 PM.png";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 const Header = () => {
   const navigate = useNavigate();
+  const { user, setUser, isLogin, setIsLogin } = useAuth();
 
   return (
     <div>
@@ -32,18 +34,24 @@ const Header = () => {
           </Link>
         </div>
         <div className="flex gap-4">
-          <button
-            onClick={() => navigate("/login")}
-            className="bg-(--color-secondary) text-(--color-text-primary) px-4 rounded-lg py-2"
-          >
-            Login
-          </button>
-          <button
-            onClick={() => navigate("/register")}
-            className="bg-(--color-secondary) text-(--color-text-primary) px-4 rounded-lg py-2"
-          >
-            Register
-          </button>
+          {isLogin ? (
+            <div onClick={() => navigate('/user-dashboard')} className="text-black cursor-pointer">{user.fullname}</div>
+          ) : (
+            <>
+              <button
+                onClick={() => navigate("/login")}
+                className="bg-(--color-secondary) text-(--color-text-primary) px-4 rounded-lg py-2"
+              >
+                Login
+              </button>
+              <button
+                onClick={() => navigate("/register")}
+                className="bg-(--color-secondary) text-(--color-text-primary) px-4 rounded-lg py-2"
+              >
+                Register
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>

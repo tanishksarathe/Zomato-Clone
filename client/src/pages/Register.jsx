@@ -65,7 +65,7 @@ const Register = () => {
       toast.success(response.data.message);
 
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error?.response?.data?.message || "Unknown Error");
     } finally {
       handleReset();
       setLoading(false);
