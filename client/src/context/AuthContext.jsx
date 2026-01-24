@@ -7,11 +7,14 @@ export const AuthProvider = (props) => {
 
   const [isLogin, setIsLogin] = useState(false);
 
+  const[role, setRole] = useState(user?.role||"");
+
   useEffect(() => {
     setIsLogin(!!user);
+    setRole(user?.role || role);
   }, [user]);
 
-  const value = { user, setUser, isLogin, setIsLogin };
+  const value = { user, setUser, isLogin, setIsLogin, role, setRole };
 
   return (
     <AuthContext.Provider value={value}>{props.children}</AuthContext.Provider>

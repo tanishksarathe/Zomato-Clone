@@ -15,6 +15,7 @@ const Register = () => {
     email: "",
     phone: "",
     password: "",
+    role:""
   });
 
   const handleChange = (e) => {
@@ -41,6 +42,8 @@ const Register = () => {
     ) {
       Error.email = "Use Proper Email Format";
     }
+
+    if(!details.role) Error.role = "Please choose any one"
 
     if (!/^[6-9]\d{9}$/.test(details.phone)) {
       Error.phone = "Only Indian Mobile Number allowed";
@@ -79,6 +82,7 @@ const Register = () => {
       email: "",
       password: "",
       phone: "",
+      role:""
     });
   };
 
@@ -116,6 +120,62 @@ const Register = () => {
           onSubmit={handleSubmit}
           onReset={handleReset}
         >
+
+           <div>
+            <label
+              className="block text-sm mb-1 font-semibold"
+              style={{ color: "var(--color-text-secondary)" }}
+            >
+              I am
+            </label>
+            <div
+              className="flex items-center gap-3 rounded-xl px-4 py-3 border focus-within:ring-2"
+              style={{
+                backgroundColor: "var(--color-background)",
+                borderColor: "var(--color-accent-soft)",
+                "--tw-ring-color": "var(--color-secondary)",
+              }}
+            >
+              <input
+                type="radio"
+                placeholder="Enter your email"
+                name="role"
+                id="manager"
+                value={'manager'}
+                checked={details.role === "manager"}
+                onChange={handleChange}
+                className="bg-transparent w-full outline-none"
+                style={{ color: "var(--color-text-primary)" }}
+              />
+              <label htmlFor="manager" className="text-sm">Restaurant Manager</label>
+              <input
+                type="radio"
+                name="role"
+                id="partner"
+                value={'partner'}
+                checked={details.role === "partner"}
+                onChange={handleChange}
+                className="bg-transparent w-full outline-none"
+                style={{ color: "var(--color-text-primary)" }}
+              />
+              <label htmlFor="partner" className="text-sm">Delivery Partner</label>
+              <input
+                type="radio"
+                name="role"
+                id="customer"
+                value={'customer'}
+                checked={details.role === "customer"}
+                onChange={handleChange}
+                className="bg-transparent w-full outline-none"
+                style={{ color: "var(--color-text-primary)" }}
+              />
+              <label htmlFor="customer" className="text-sm">Customer</label>
+            </div>
+            <div className="text-red-600 text-[12px]">
+              {validationError && validationError.role}
+            </div>
+          </div>
+
           {/* Name */}
           <div>
             <label

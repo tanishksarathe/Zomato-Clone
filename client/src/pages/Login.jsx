@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 
 const Login = () => {
-  const { user, setUser, isLogin, setIsLogin } = useAuth();
+  const { user, setUser, isLogin, setIsLogin, setRole } = useAuth();
 
   const [details, setDetails] = useState({
     email: "",
@@ -66,6 +66,29 @@ const Login = () => {
         JSON.stringify(response.data.data),
       );
       toast.success("Login Successful");
+
+      switch (response.data.data.role) {
+        case "manager":
+          setRole(response.data.data.role);
+          navigate("/restaurant-dashboard");
+          break;
+        case "partner":
+          setRole(response.data.data.role);
+          navigate("/rider-dashboard");
+          break;
+        case "admin":
+          setRole(response.data.data.role);
+          navigate("/admin-dashboard");
+          break;
+        case "customer":
+          setRole(response.data.data.role);
+          navigate("/user-dashboard");
+          break;
+
+        default:
+          break;
+      }
+
       navigate("/user-dashboard");
     } catch (error) {
       console.log(error);
