@@ -1,6 +1,7 @@
 import {
   HandHelping,
   Headset,
+  LogOut,
   Menu,
   ScanLine,
   ShoppingBag,
@@ -9,37 +10,53 @@ import {
   UserRoundPen,
 } from "lucide-react";
 import React from "react";
+import api from "../../config/API";
+import toast from "react-hot-toast";
+import { useAuth } from "../../context/AuthContext";
 
 const SidebarDashboard = ({ active, setActive, collapsed, setCollapsed }) => {
-
+  const { setUser, setIsLogin } = useAuth();
 
   const list = [
     {
       key: "overview",
       icon: <Target size={15} />,
-      title : "Overview",
+      title: "Overview",
     },
     {
       key: "profile",
       icon: <UserRoundPen size={15} />,
-      title : "Profile",
+      title: "Profile",
     },
     {
       key: "order",
       icon: <ShoppingBag size={15} />,
-      title : "Orders",
+      title: "Orders",
     },
     {
       key: "transaction",
       icon: <ScanLine size={15} />,
-      title : "Transactions",
+      title: "Transactions",
     },
     {
       key: "help",
       icon: <Headset size={15} />,
-      title : "Help Desk",
+      title: "Help Desk",
     },
-  ]
+  ];
+
+  const handleLogout = async () => {
+    try {
+      const res = await api.get("/auth/logout"); // backend bhraman to clear cookie
+      setUser(""); //auth clear
+      setIsLogin(false); // auth login clear
+      sessionStorage.removeItem("GrabMyMeal User");// session clear
+      toast.success("Logout Successfully");
+    } catch (error) {
+      console.log(error);
+      toast.error(err?.response?.data?.message || "Unknown Error");
+    }
+  };
 
   return (
     <>
@@ -57,19 +74,26 @@ const SidebarDashboard = ({ active, setActive, collapsed, setCollapsed }) => {
         </div>
 
         <div className="flex flex-col p-3 h-70 gap-3 font-semibold">
+          {list.map((item, idx) => (
+            <button
+              key={idx}
+              onClick={() => setActive(item.key)}
+              className={`flex gap-3 h-12 text-nowrap overflow-hidden items-center hover:text-(--color-text-primary) p-2 rounded-xl ${collapsed ? `mx-auto` : ""} ${active === item.key ? "bg-(--color-surface)" : "transition-all hover:scale-105"}`}
+            >
+              {item.icon} {collapsed ? "" : item.title}
+            </button>
+          ))}
+        </div>
+      </div>
 
-          {
-            list.map((item, idx)=> (
-              <button key={idx}
-            onClick={() => setActive(item.key)}
-            className={`flex gap-3 h-12 text-nowrap overflow-hidden items-center hover:text-(--color-text-primary) p-2 rounded-xl ${collapsed ? `mx-auto` : ""} ${active === item.key ? "bg-(--color-surface)" : "transition-all hover:scale-105"}`}
+      <div className="shadow-2xl rounded-xl self-start mt-1 ml-1 bg-(--color-accent-soft) h-fit">
+        <div className="flex flex-col p-3 h-fit gap-3 font-semibold">
+          <button
+            onClick={handleLogout}
+            className={`flex gap-3 h-12 text-nowrap text-red-700 overflow-hidden items-center hover:text-(--color-text-primary) p-2 rounded-xl ${collapsed ? `mx-auto` : ""} ${active === 'logout' ? "bg-(--color-surface)" : "transition-all hover:scale-105"}`}
           >
-            {item.icon} {collapsed ? "" : item.title}
+            <LogOut /> {collapsed ? "" : "Logout"}
           </button>
-
-            ))
-          }
-
         </div>
       </div>
     </>

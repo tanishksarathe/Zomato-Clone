@@ -1,12 +1,18 @@
 import logo from "../assets/ChatGPT Image Jan 11, 2026, 05_46_29 PM.png";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { LogOut } from "lucide-react";
+import api from '../config/API'
+import toast from "react-hot-toast";
+
 const Header = () => {
   const navigate = useNavigate();
-  const { user, isLogin } = useAuth();
+  const { user, isLogin, setIsLogin, setUser } = useAuth();
+
+  console.log(user.role);
 
   const handleNavigate=()=>{
-    switch (user.data.role) {
+    switch (user.role) {
       case "manager":
           navigate("/restaurant-dashboard");
           break;
@@ -24,6 +30,19 @@ const Header = () => {
           break;
     }
   }
+
+    const handleLogout = async () => {
+    try {
+      const res = await api.get("/auth/logout"); // backend bhraman to clear cookie
+      setUser(""); //auth clear
+      setIsLogin(false); // auth login clear
+      sessionStorage.removeItem("GrabMyMeal User");// session clear
+      toast.success("Logout Successfully");
+    } catch (error) {
+      console.log(error);
+      toast.error(err?.response?.data?.message || "Unknown Error");
+    }
+  };
 
   return (
     <div>
@@ -55,7 +74,14 @@ const Header = () => {
         </div>
         <div className="flex gap-4">
           {isLogin ? (
-            <div onClick={handleNavigate} className="text-black cursor-pointer">{user.fullname}</div>
+            <div className="flex justify-center gap-5 items-center">
+              <div onClick={handleNavigate} className="text-black cursor-pointer">{user.fullname}</div>
+            <button 
+            onClick={handleLogout}
+            className="p-2 cursor-pointer rounded-full bg-(--color-secondary) text-(-color-text-primary)">
+              <LogOut/>
+            </button>
+            </div>
           ) : (
             <>
               <button

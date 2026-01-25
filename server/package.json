@@ -23,6 +23,7 @@
     "git-filter-repo": "^0.0.30",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.1.2",
-    "morgan": "^1.10.1"
+    "morgan": "^1.10.1",
+    "multer": "^2.0.2"
   }
 }

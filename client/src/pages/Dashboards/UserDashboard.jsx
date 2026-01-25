@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import SidebarDashboard from "../../components/userDashboard/SidebarDashboard";
 import { useState } from "react";
 import UserOverview from "../../components/userDashboard/UserOverview";
@@ -6,12 +6,32 @@ import UserProfile from "../../components/userDashboard/UserProfile";
 import UserOrder from "../../components/userDashboard/UserOrder";
 import UserTransactions from "../../components/userDashboard/UserTransactions";
 import UserHelpdesk from "../../components/userDashboard/UserHelpdesk";
-import { Menu } from "lucide-react";
+import { Ban, Menu } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 const UserDashboard = () => {
  
   const [active, setActive] = useState("overview");
   const [collapsed, setCollapsed] = useState(true);
+
+  const navigate = useNavigate();
+
+  const { user, role, isLogin } = useAuth();
+
+  useEffect(()=>{
+    if(!isLogin){
+      navigate('/login');
+    }
+  })
+
+
+  if(role !== 'customer'){
+    return (
+      <div className="w-fit p-5 mx-auto text-center bg-gray-100 border rounded-xl mt-5"><Ban color="red" />You are not logged in as Customer.</div>
+    )
+  }
+
 
   return (
     <>

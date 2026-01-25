@@ -69,19 +69,19 @@ const Login = () => {
 
       switch (response.data.data.role) {
         case "manager":
-          setRole(response.data.data.role);
+          setRole(user.role);
           navigate("/restaurant-dashboard");
           break;
         case "partner":
-          setRole(response.data.data.role);
+          setRole(user.role);
           navigate("/rider-dashboard");
           break;
         case "admin":
-          setRole(response.data.data.role);
+          setRole(user.role);
           navigate("/admin-dashboard");
           break;
         case "customer":
-          setRole(response.data.data.role);
+          setRole(user.role);
           navigate("/user-dashboard");
           break;
 

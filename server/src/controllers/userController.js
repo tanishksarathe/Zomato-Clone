@@ -26,7 +26,6 @@ export const userUpdate = async (req, res, next) => {
     //   .status(200)
     //   .json({ message: "User Updated Successfully", data: currentUser });
 
-
     const updatedUser = await User.findByIdAndUpdate(
       { _id: currentUser._id },
       {
@@ -37,11 +36,19 @@ export const userUpdate = async (req, res, next) => {
       { new: true },
     );
 
-
     res
       .status(200)
       .json({ message: "User Updated Successfully", data: updatedUser });
+  } catch (error) {
+    next(error);
+  }
+};
 
+export const userChangePhoto = async (req, res, next) => {
+  try {
+    console.log("Form_data se aaya file ke form m aaya", req.file);
+    console.log("Form_data se aaya body ke form m aaya", req.body);
+    res.status(200).json({ message: "Photo Updated" });
   } catch (error) {
     next(error);
   }

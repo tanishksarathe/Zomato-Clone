@@ -26,12 +26,17 @@ export const userRegistration = async (req, res, next) => {
 
     const hashedpassword = await bcrypt.hash(password, salt);
 
+    const photoUrl = `https://placehold.co/600x400?text=${fullname.charAt(0).toUpperCase()}`
+    const photo ={
+      url:photoUrl
+    }
     const newUser = await User.create({
       fullname,
       email,
       phone,
       password: hashedpassword,
       role,
+      photo
     });
 
     console.log(newUser);
@@ -83,6 +88,7 @@ export const userLogin = async (req, res, next) => {
 
 export const userLogout = async (req, res, next) => {
   try {
+    res.clearCookie('oreo');
     res.status(200).json({ message: "Logout Successful" });
   } catch (error) {
     next(error);
