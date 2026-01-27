@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import EditProfileModal from "../modals/EditProfileModal";
-import { CameraIcon, Mail, Phone, User } from "lucide-react";
+import { CameraIcon, Mail, Phone } from "lucide-react";
 import UserImage from "../../assets/image.png";
 import api from "../../config/API";
 import toast from "react-hot-toast";
@@ -9,20 +9,27 @@ import toast from "react-hot-toast";
 const UserProfile = () => {
   const [openModal, setOpenModal] = useState(false);
 
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
 
-  const [photo, setPhoto] = useState(""); // jo backend tk photo lekr jaaegi
+  // const [photo, setPhoto] = useState(""); // jo backend tk photo lekr jaaegi
 
   const [preview, setPreview] = useState("");
 
-  const changePhoto = async () => {
+  
+  const changePhoto = async (photo) => {
     const form_data = new FormData();
-
+    
     form_data.append("image", photo); // image file
     form_data.append("imageURL", preview); //image URL
-
+    
     try {
       const res = await api.patch("/user/photo-update", form_data);
+      console.log("Response data here :",res.data.data);
+      setUser(res.data.data);
+      
+      console.log("User",user);
+      sessionStorage.setItem("GrabMyMeal User", JSON.stringify(res.data.data));
+      
       toast.success(res?.data?.message);
     } catch (error) {
       console.log(error);
@@ -36,10 +43,10 @@ const UserProfile = () => {
     const photoUrl = URL.createObjectURL(file);
 
     setPreview(photoUrl);
-    setTimeout(() => {
+  
       setPhoto(file);
-      changePhoto();
-    }, 5000);
+      changePhoto(file);
+    
   };
 
   return (

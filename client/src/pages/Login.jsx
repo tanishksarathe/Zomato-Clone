@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 
 const Login = () => {
-  const { user, setUser, isLogin, setIsLogin, setRole } = useAuth();
+  const { user, setUser, role, setIsLogin, setRole } = useAuth();
 
   const [details, setDetails] = useState({
     email: "",
@@ -67,7 +67,7 @@ const Login = () => {
       );
       toast.success("Login Successful");
 
-      switch (response.data.data.role) {
+      switch (role) {
         case "manager":
           setRole(user.role);
           navigate("/restaurant-dashboard");

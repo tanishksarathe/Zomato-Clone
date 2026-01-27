@@ -2,7 +2,7 @@ import logo from "../assets/ChatGPT Image Jan 11, 2026, 05_46_29 PM.png";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { LogOut } from "lucide-react";
-import api from '../config/API'
+import api from "../config/API";
 import toast from "react-hot-toast";
 
 const Header = () => {
@@ -11,32 +11,32 @@ const Header = () => {
 
   console.log(user.role);
 
-  const handleNavigate=()=>{
+  const handleNavigate = () => {
     switch (user.role) {
       case "manager":
-          navigate("/restaurant-dashboard");
-          break;
-        case "partner":
-          navigate("/rider-dashboard");
-          break;
-        case "admin":
-          navigate("/admin-dashboard");
-          break;
-        case "customer":
-          navigate("/user-dashboard");
-          break;
+        navigate("/restaurant-dashboard");
+        break;
+      case "partner":
+        navigate("/rider-dashboard");
+        break;
+      case "admin":
+        navigate("/admin-dashboard");
+        break;
+      case "customer":
+        navigate("/user-dashboard");
+        break;
 
-        default:
-          break;
+      default:
+        break;
     }
-  }
+  };
 
-    const handleLogout = async () => {
+  const handleLogout = async () => {
     try {
       const res = await api.get("/auth/logout"); // backend bhraman to clear cookie
       setUser(""); //auth clear
       setIsLogin(false); // auth login clear
-      sessionStorage.removeItem("GrabMyMeal User");// session clear
+      sessionStorage.removeItem("GrabMyMeal User"); // session clear
       toast.success("Logout Successfully");
     } catch (error) {
       console.log(error);
@@ -75,12 +75,18 @@ const Header = () => {
         <div className="flex gap-4">
           {isLogin ? (
             <div className="flex justify-center gap-5 items-center">
-              <div onClick={handleNavigate} className="text-black cursor-pointer">{user.fullname}</div>
-            <button 
-            onClick={handleLogout}
-            className="p-2 cursor-pointer rounded-full bg-(--color-secondary) text-(-color-text-primary)">
-              <LogOut/>
-            </button>
+              <div
+                onClick={handleNavigate}
+                className="text-black cursor-pointer"
+              >
+                {user.fullname}
+              </div>
+              <button
+                onClick={handleLogout}
+                className="p-2 cursor-pointer rounded-full bg-(--color-secondary) text-(-color-text-primary)"
+              >
+                <LogOut />
+              </button>
             </div>
           ) : (
             <>

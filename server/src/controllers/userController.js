@@ -1,3 +1,4 @@
+import cloudinary from "../config/cloudinary.js";
 import User from "../models/userModel.js";
 
 export const userUpdate = async (req, res, next) => {
@@ -46,9 +47,43 @@ export const userUpdate = async (req, res, next) => {
 
 export const userChangePhoto = async (req, res, next) => {
   try {
+    const currentUser = req.user;
     console.log("Form_data se aaya file ke form m aaya", req.file);
-    console.log("Form_data se aaya body ke form m aaya", req.body);
-    res.status(200).json({ message: "Photo Updated" });
+    const dp = req.file;
+    if (!dp) {
+      const error = new Error("Profile Picture Required");
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    // upload photo on cloudinary
+
+    if (currentUser.photo.publicID) {
+      await cloudinary.uploader.destroy(currentUser.photo.publicID);
+    }
+
+    const b64 = Buffer.from(dp.buffer).toString("base64");
+
+    const dataURI = `data:${dp.mimetype};base64,${b64}`;
+
+    console.log("Data URI = ", dataURI.slice(0,100));
+
+
+    const result = await cloudinary.uploader.upload(dataURI,{
+      folder:"GrabMyMeal/User",
+      width:500,
+      height:500,
+      crop:"fill"
+    })
+
+    console.log("Image Uploaded Successfully : ",result);
+    
+    currentUser.photo.url=result.secure_url;
+    currentUser.photo.publicID=result.public_id;
+
+    await currentUser.save();
+
+    res.status(200).json({ message: "Photo Updated", data:currentUser });
   } catch (error) {
     next(error);
   }
