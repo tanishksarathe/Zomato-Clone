@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import api from "../../config/API";
 import toast from "react-hot-toast";
+import Input from "../FormElements/Input";
+import Select from "../FormElements/Select";
 
 const EditProfileModal = ({ onClose }) => {
   const { user, setUser } = useAuth();
@@ -13,7 +15,48 @@ const EditProfileModal = ({ onClose }) => {
     fullname: user.fullname,
     email: user.email,
     phone: user.phone,
+    role: user.role || "N/A",
+    dob: user?.dob || "",
+    gender: user?.gender || "N/A",
+    city: user?.city || "",
+    address: user?.address || "",
+    state: user?.state || "",
+    pin: user?.pin || "",
+    geolocation: {
+      lat: user?.geolocation?.lat || "",
+      lon: user?.geolocation?.lon || "",
+    },
+    documents: {
+      uidai: user?.documents?.uidai || "",
+      pan: user?.documents?.pan || "",
+    },
+    paymentDetails: {
+      upi: user?.paymentDetails?.upi || "",
+      ifs_Code: user?.paymentDetails?.ifs_Code || "",
+      account_number: user?.paymentDetails?.account_number || "",
+    },
   });
+
+  const fetchLocation = async (e) => {
+    e.preventDefault();
+
+    try {
+      navigator.geolocation.getCurrentPosition((res) => {
+        // console.log(res);
+
+        setDetails({
+          ...details,
+          geolocation: {
+            ...details["geolocation"],
+            lat: res.coords.latitude,
+            lon: res.coords.longitude,
+          },
+        });
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -21,8 +64,20 @@ const EditProfileModal = ({ onClose }) => {
     setDetails((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleNestedChange = (parent, field, value) => {
+    setDetails({
+      ...details,
+      [parent]: {
+        ...details[parent],
+        [field]: value,
+      },
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    setLoading(true);
 
     try {
       console.log("Edit Profile", details);
@@ -38,7 +93,6 @@ const EditProfileModal = ({ onClose }) => {
       setUser(response.data.data);
       toast.success("User Updated Successfully");
       onClose();
-      
     } catch (error) {
       console.log(error);
     }
@@ -48,16 +102,20 @@ const EditProfileModal = ({ onClose }) => {
     <>
       <div className="fixed bg-black/80 inset-0 flex items-center justify-center">
         <div className="bg-white max-h-[85vh] w-5xl overflow-y-auto z-100">
+          <button
+            className="absolute right-0 top-0 text-white"
+            onClick={() => onClose()}
+          >
+            <X />
+          </button>
           <div
-            className="min-h-screen flex items-center justify-center"
+            className="min-h-screen flex items-center relative justify-center"
             style={{ backgroundColor: "var(--color-background)" }}
           >
-            <button
-              className="absolute right-0 top-0 text-white"
-              onClick={() => onClose()}
-            >
-              <X />
-            </button>
+            <div className="absolute top-0 left-0 p-2 text-sm text-(--color-primary-hover)">
+              Last updated on {user?.createdAt?.slice(0, 10)}
+            </div>
+
             <div
               className="w-full max-w-lg rounded-2xl shadow-xl p-8"
               style={{ backgroundColor: "var(--color-surface)" }}
@@ -77,111 +135,292 @@ const EditProfileModal = ({ onClose }) => {
               </p>
 
               {/* Form */}
-              <form className="space-y-5" onSubmit={handleSubmit}>
-                {/* Name */}
-                <div>
-                  <label
-                    className="text-sm font-medium"
-                    style={{ color: "var(--color-text-secondary)" }}
-                  >
-                    Full Name
-                  </label>
+              <form className="w-full space-y-6" onSubmit={handleSubmit}>
+                {/* ===== BASIC INFO ===== */}
+                <div className="space-y-4">
+                  <Input
+                    label="fullname"
+                    value={details.fullname}
+                    name="fullname"
+                    onChangeMethod={handleChange}
+                  />
+                  <Input
+                    label="email"
+                    value={details.email}
+                    name="email"
+                    onChangeMethod={handleChange}
+                    disabled
+                  />
+                  <Input
+                    label="phone"
+                    value={details.phone}
+                    name="phone"
+                    onChangeMethod={handleChange}
+                  />
+                  {/* <Input label="Password" type="password" /> */}
+                </div>
+
+                {/* ===== ROLE & GENDER ===== */}
+                <div className="grid grid-cols-2 gap-4">
                   <div
-                    className="mt-1 flex items-center gap-2 rounded-lg border px-3 py-2"
-                    style={{ borderColor: "var(--color-accent-soft)" }}
+                    className="flex w-fit items-center gap-3 rounded-xl px-4 py-3 border focus-within:ring-2"
+                    style={{
+                      backgroundColor: "var(--color-background)",
+                      borderColor: "var(--color-accent-soft)",
+                      "--tw-ring-color": "var(--color-secondary)",
+                    }}
                   >
-                    <User size={18} style={{ color: "var(--color-primary)" }} />
                     <input
-                      type="text"
-                      name="fullname"
-                      value={details.fullname}
+                      type="radio"
+                      name="role"
+                      id="manager"
+                      value={"manager"}
+                      checked={details.role === "manager"}
                       onChange={handleChange}
-                      className="w-full bg-transparent outline-none"
+                      className="bg-transparent w-full outline-none"
                       style={{ color: "var(--color-text-primary)" }}
+                    />
+                    <label htmlFor="manager" className="text-sm">
+                      Restaurant Manager
+                    </label>
+                    <input
+                      type="radio"
+                      name="role"
+                      id="partner"
+                      value={"partner"}
+                      checked={details.role === "partner"}
+                      onChange={handleChange}
+                      className="bg-transparent w-full outline-none"
+                      style={{ color: "var(--color-text-primary)" }}
+                    />
+                    <label htmlFor="partner" className="text-sm">
+                      Delivery Partner
+                    </label>
+                    <input
+                      type="radio"
+                      name="role"
+                      id="customer"
+                      value={"customer"}
+                      checked={details.role === "customer"}
+                      onChange={handleChange}
+                      className="bg-transparent w-full outline-none"
+                      style={{ color: "var(--color-text-primary)" }}
+                    />
+                    <label htmlFor="customer" className="text-sm">
+                      Customer
+                    </label>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div
+                    className="flex items-center w-fit gap-3 rounded-xl px-4 py-3 border focus-within:ring-2"
+                    style={{
+                      backgroundColor: "var(--color-background)",
+                      borderColor: "var(--color-accent-soft)",
+                      "--tw-ring-color": "var(--color-secondary)",
+                    }}
+                  >
+                    <input
+                      type="radio"
+                      name="gender"
+                      id="male"
+                      value={"male"}
+                      checked={details.gender === "male"}
+                      onChange={handleChange}
+                      className="bg-transparent w-full outline-none"
+                      style={{ color: "var(--color-text-primary)" }}
+                    />
+                    <label htmlFor="male" className="text-sm">
+                      Male
+                    </label>
+                    <input
+                      type="radio"
+                      name="gender"
+                      id="female"
+                      value={"female"}
+                      checked={details.gender === "female"}
+                      onChange={handleChange}
+                      className="bg-transparent w-full outline-none"
+                      style={{ color: "var(--color-text-primary)" }}
+                    />
+                    <label htmlFor="female" className="text-sm">
+                      Female
+                    </label>
+                    <input
+                      type="radio"
+                      name="gender"
+                      id="others"
+                      value={"others"}
+                      checked={details.gender === "others"}
+                      onChange={handleChange}
+                      className="bg-transparent w-full outline-none"
+                      style={{ color: "var(--color-text-primary)" }}
+                    />
+                    <label htmlFor="others" className="text-sm">
+                      Others
+                    </label>
+                  </div>
+                </div>
+
+                {/* ===== LOCATION ===== */}
+                <div className="space-y-4">
+                  <Input
+                    label="City"
+                    value={details.city}
+                    name="city"
+                    onChangeMethod={handleChange}
+                  />
+                  <Input
+                    label="State"
+                    value={details.state}
+                    name="state"
+                    onChangeMethod={handleChange}
+                  />
+                  <Input
+                    label="PIN Code"
+                    value={details.pin}
+                    name="pin"
+                    onChangeMethod={handleChange}
+                  />
+                  <Input
+                    label="Address"
+                    value={details.address}
+                    name="address"
+                    onChangeMethod={handleChange}
+                  />
+                  <Input
+                    label="Date of Birth"
+                    type="date"
+                    value={details.dob}
+                    name="dob"
+                    onChangeMethod={handleChange}
+                  />
+                </div>
+
+                {/* ===== GEO LOCATION ===== */}
+                <div className="grid grid-cols-2 gap-4">
+                  <Input
+                    label="Latitude"
+                    value={details.geolocation.lat}
+                    name="lat"
+                    onChangeMethod={handleNestedChange}
+                    disabled={true}
+                  />
+                  <Input
+                    label="Longitude"
+                    value={details.geolocation.lon}
+                    name="lon"
+                    onChangeMethod={handleNestedChange}
+                    disabled={true}
+                  />
+                </div>
+
+                <button
+                  className={`border px-2 py-1 rounded-lg text-sm ${details.geolocation.latitude !== "N/A" ? "border-green-500" : "border-red-600"} `}
+                  onClick={fetchLocation}
+                >
+                  {details.geolocation.longitude !== "N/A" &&
+                  details.geolocation.latitude !== "N/A"
+                    ? "Fetched"
+                    : "Get Live Location"}
+                </button>
+
+                {/* ===== MANAGER ONLY ===== */}
+                {user.role === "manager" && (
+                  <div className="space-y-4">
+                    <Input
+                      label="Restaurant Name"
+                      value={details.restaurantName}
+                      name="restaurant_name"
+                      onChangeMethod={handleNestedChange}
+                    />
+                    <Input
+                      label="Cuisine Type"
+                      value={details.cuisine}
+                      name="cuisine"
+                      onChangeMethod={handleNestedChange}
+                    />
+                  </div>
+                )}
+
+                {/* ===== PAYMENT DETAILS ===== */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-sm text-(--color-text-primary)">
+                    Payment Details
+                  </h3>
+                  <Input
+                    label="UPI ID"
+                    value={details.paymentDetails.upi}
+                    name="upi"
+                    onChangeMethod={(e) =>
+                      handleNestedChange(
+                        "paymentDetails",
+                        "upi",
+                        e.target.value,
+                      )
+                    }
+                  />
+                  <Input
+                    label="IFSC Code"
+                    value={details.paymentDetails.ifs_Code}
+                    name="ifs_Code"
+                    onChangeMethod={(e) =>
+                      handleNestedChange(
+                        "paymentDetails",
+                        "ifs_Code",
+                        e.target.value,
+                      )
+                    }
+                  />
+                  <Input
+                    label="Account Number"
+                    value={details.paymentDetails.account_number}
+                    name="account_number"
+                    onChangeMethod={(e) =>
+                      handleNestedChange(
+                        "paymentDetails",
+                        "account_number",
+                        e.target.value,
+                      )
+                    }
+                  />
+                </div>
+
+                {/* ===== DOCUMENTS ===== */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-sm text-(--color-text-primary)">
+                    Documents
+                  </h3>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    {/* <Input label="GST Number" /> */}
+                    {/* <Input label="FSSAI" /> */}
+                    {/* <Input label="RC" /> */}
+                    {/* <Input label="Driving License" /> */}
+                    <Input
+                      label="UIDAI"
+                      value={details.documents.uidai}
+                      name="upi"
+                      onChangeMethod={(e) =>
+                        handleNestedChange("documents", "uidai", e.target.value)
+                      }
+                    />
+                    <Input
+                      label="PAN"
+                      value={details.documents.pan}
+                      name="upi"
+                      onChangeMethod={(e) =>
+                        handleNestedChange("documents", "pan", e.target.value)
+                      }
                     />
                   </div>
                 </div>
 
-                {/* Email */}
-                <div>
-                  <label
-                    className="text-sm font-medium"
-                    style={{ color: "var(--color-text-secondary)" }}
-                  >
-                    Email Address
-                  </label>
-                  <div
-                    className="mt-1 flex items-center gap-2 rounded-lg border px-3 py-2"
-                    style={{ borderColor: "var(--color-accent-soft)" }}
-                  >
-                    <Mail size={18} style={{ color: "var(--color-primary)" }} />
-                    <input
-                      type="email"
-                      name="email"
-                      value={details.email}
-                      onChange={handleChange}
-                      className="w-full bg-transparent outline-none"
-                      style={{ color: "var(--color-text-primary)" }}
-                      disabled
-                    />
-                  </div>
-                </div>
-
-                {/* Phone */}
-                <div>
-                  <label
-                    className="text-sm font-medium"
-                    style={{ color: "var(--color-text-secondary)" }}
-                  >
-                    Phone Number
-                  </label>
-                  <div
-                    className="mt-1 flex items-center gap-2 rounded-lg border px-3 py-2"
-                    style={{ borderColor: "var(--color-accent-soft)" }}
-                  >
-                    <Phone
-                      size={18}
-                      style={{ color: "var(--color-primary)" }}
-                    />
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={details.phone}
-                      onChange={handleChange}
-                      className="w-full bg-transparent outline-none"
-                      style={{ color: "var(--color-text-primary)" }}
-                    />
-                  </div>
-                </div>
-
-                {/* Password */}
-
-                {/* <div>
-                  <label
-                    className="text-sm font-medium"
-                    style={{ color: "var(--color-text-secondary)" }}
-                  >
-                    New Password
-                  </label>
-                  <div
-                    className="mt-1 flex items-center gap-2 rounded-lg border px-3 py-2"
-                    style={{ borderColor: "var(--color-accent-soft)" }}
-                  >
-                    <Lock size={18} style={{ color: "var(--color-primary)" }} />
-                    <input
-                      type="password"
-                      placeholder="••••••••"
-                      className="w-full bg-transparent outline-none"
-                      style={{ color: "var(--color-text-primary)" }}
-                    />
-                  </div>
-                </div> */}
-
-                {/* Save Button */}
+                {/* ===== SUBMIT ===== */}
                 <button
                   type="submit"
-                  onSubmit={handleSubmit}
-                  className="w-full flex items-center justify-center gap-2 rounded-lg py-3 font-semibold transition"
+                  className="w-full py-3 rounded-xl font-semibold transition"
                   style={{
                     backgroundColor: "var(--color-primary)",
                     color: "#fff",
@@ -195,7 +434,6 @@ const EditProfileModal = ({ onClose }) => {
                       "var(--color-primary)")
                   }
                 >
-                  <Save size={18} />
                   Save Changes
                 </button>
               </form>

@@ -35,7 +35,7 @@ const UserDashboard = () => {
 
   return (
     <>
-      <div className="flex w-full h-[86vh]">
+      <div className="flex w-full h-full bg-(--color-background)">
         <div className={`transition-all duration-200 scroll-smooth ${collapsed ? "w-1/20" : "w-2/10"}`}>
     
         <SidebarDashboard collapsed={collapsed} setCollapsed={setCollapsed}  active={active} setActive={setActive} />

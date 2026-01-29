@@ -40,7 +40,7 @@ const Header = () => {
       toast.success("Logout Successfully");
     } catch (error) {
       console.log(error);
-      toast.error(err?.response?.data?.message || "Unknown Error");
+      toast.error(error?.response?.data?.message || "Unknown Error");
     }
   };
 

@@ -66,7 +66,7 @@ const userSchema = mongoose.Schema(
         default: "",
       },
     },
-    geoLocation: {
+    geolocation: {
       lat: {
         type: String,
         required: true,

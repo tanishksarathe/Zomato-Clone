@@ -5,6 +5,8 @@ import { CameraIcon, Mail, Phone } from "lucide-react";
 import UserImage from "../../assets/image.png";
 import api from "../../config/API";
 import toast from "react-hot-toast";
+import InfoRow from "../FormElements/InfoRow";
+import { MapPin, User, CreditCard, FileText, Globe } from "lucide-react";
 
 const UserProfile = () => {
   const [openModal, setOpenModal] = useState(false);
@@ -15,21 +17,20 @@ const UserProfile = () => {
 
   const [preview, setPreview] = useState("");
 
-  
   const changePhoto = async (photo) => {
     const form_data = new FormData();
-    
+
     form_data.append("image", photo); // image file
-    form_data.append("imageURL", preview); //image URL
-    
+    // form_data.append("imageURL", preview); //image URL
+
     try {
       const res = await api.patch("/user/photo-update", form_data);
-      console.log("Response data here :",res.data.data);
+      console.log("Response data here :", res.data.data);
       setUser(res.data.data);
-      
-      console.log("User",user);
+
+      console.log("User", user);
       sessionStorage.setItem("GrabMyMeal User", JSON.stringify(res.data.data));
-      
+
       toast.success(res?.data?.message);
     } catch (error) {
       console.log(error);
@@ -43,20 +44,19 @@ const UserProfile = () => {
     const photoUrl = URL.createObjectURL(file);
 
     setPreview(photoUrl);
-  
-      setPhoto(file);
-      changePhoto(file);
-    
+    changePhoto(file);
   };
+
+  console.log("User from user Profile : ",user);
 
   return (
     <>
       <div
-        className="min-h-screen flex items-center justify-center"
+        className="min-h-screen flex flex-col py-10 gap-4 items-center justify-center"
         style={{ backgroundColor: "var(--color-background)" }}
       >
         <div
-          className="w-full max-w-md rounded-3xl shadow-xl p-8 flex flex-col items-center text-center"
+          className="w-full max-w-4xl rounded-3xl shadow-xl p-8 flex items-center text-center"
           style={{ backgroundColor: "var(--color-surface)" }}
         >
           {/* Avatar */}
@@ -65,9 +65,9 @@ const UserProfile = () => {
             style={{ backgroundColor: "var(--color-accent-soft)" }}
           >
             <img
-              src={preview || user.photo.url || UserImage}
+              src={preview || user?.photo?.url || UserImage}
               alt="avatar"
-              className="object-cover"
+              className="object-cover rounded-full p-1"
             />
 
             <div className="bottom-2 left-[75%] border bg-white p-2 rounded-full group flex gap-3 absolute group">
@@ -88,22 +88,32 @@ const UserProfile = () => {
           </div>
 
           {/* Name */}
-          <h2
-            className="text-2xl font-semibold"
-            style={{ color: "var(--color-text-primary)" }}
-          >
-            {user.fullname}
-          </h2>
+          <div className="flex flex-col w-55">
+            <h2
+              className="text-2xl font-semibold"
+              style={{ color: "var(--color-text-primary)" }}
+            >
+              {user.fullname}
+            </h2>
 
-          <p
-            className="text-sm mb-6"
-            style={{ color: "var(--color-text-secondary)" }}
-          >
-            Active User
-          </p>
+            <p
+              className="text-sm mb-6 text-center justify-center items-center w-45 flex mx-auto"
+              style={{ color: "var(--color-text-secondary)" }}
+            >
+              Active{" "}
+              {user?.role === "customer"
+                ? "Customer"
+                : user?.role === "partner"
+                  ? "Rider"
+                  : user?.role === "manager"
+                    ? "Manager"
+                    : ""}
+                    <br /> Since {user?.createdAt?.slice(0,4)}
+            </p>
+          </div>
 
           {/* Info Section */}
-          <div className="w-full space-y-4">
+          <div className="w-90 space-y-4">
             {/* Email */}
             <div
               className="flex items-center gap-3 rounded-xl px-4 py-3"
@@ -134,23 +144,168 @@ const UserProfile = () => {
           </div>
 
           {/* Footer Button */}
-          <button
-            onClick={() => setOpenModal(true)}
-            className="mt-6 px-6 py-2 rounded-xl font-semibold transition"
-            style={{
-              backgroundColor: "var(--color-primary)",
-              color: "#fff",
-            }}
-            onMouseOver={(e) =>
-              (e.currentTarget.style.backgroundColor =
-                "var(--color-primary-hover)")
-            }
-            onMouseOut={(e) =>
-              (e.currentTarget.style.backgroundColor = "var(--color-primary)")
-            }
-          >
-            Edit Profile
-          </button>
+          <div className="flex gap-4 px-2 flex-col justify-center items-center">
+            <button
+              onClick={() => setOpenModal(true)}
+              className="px-3 py-2 w-30 rounded-xl font-semibold transition"
+              style={{
+                backgroundColor: "var(--color-primary)",
+                color: "#fff",
+              }}
+              onMouseOver={(e) =>
+                (e.currentTarget.style.backgroundColor =
+                  "var(--color-primary-hover)")
+              }
+              onMouseOut={(e) =>
+                (e.currentTarget.style.backgroundColor = "var(--color-primary)")
+              }
+            >
+              Edit Profile
+            </button>
+            <button
+              // onClick={() => setOpenModal(true)}
+              className=" px-3 py-2 rounded-xl font-semibold transition"
+              style={{
+                backgroundColor: "var(--color-primary)",
+                color: "#fff",
+              }}
+              onMouseOver={(e) =>
+                (e.currentTarget.style.backgroundColor =
+                  "var(--color-primary-hover)")
+              }
+              onMouseOut={(e) =>
+                (e.currentTarget.style.backgroundColor = "var(--color-primary)")
+              }
+            >
+              Delete Profile
+            </button>
+          </div>
+        </div>
+        <div
+          className="w-full max-w-4xl rounded-3xl shadow-xl p-8 space-y-6"
+          style={{ backgroundColor: "var(--color-surface)" }}
+        >
+          {/* ===== BASIC INFO ===== */}
+          <div className="grid grid-cols-2 gap-4">
+            <InfoRow
+              icon={User}
+              label="Role"
+              value={
+                user?.role === "customer"
+                  ? "Customer"
+                  : user?.role === "partner"
+                    ? "Delivery Partner"
+                    : user?.role === "manager"
+                      ? "Restraunt Manager"
+                      : ""
+              }
+            />
+            <InfoRow
+              icon={User}
+              label="Gender"
+              value={
+                user?.gender === "male"
+                  ? "Male"
+                  : user?.gender === "female"
+                    ? "Female"
+                    : ""
+              }
+            />
+            <InfoRow icon={User} label="Date of Birth" value={user?.dob} />
+          </div>
+
+          {/* ===== ADDRESS ===== */}
+          <div className="space-y-3">
+            <h3
+              className="text-sm font-semibold"
+              style={{ color: "var(--color-text-primary)" }}
+            >
+              Address
+            </h3>
+
+            <div className="grid grid-cols-2 gap-4">
+              <InfoRow icon={MapPin} label="City" value={user?.city} />
+              <InfoRow icon={MapPin} label="State" value={user?.state} />
+              <InfoRow icon={MapPin} label="PIN Code" value={user?.pin} />
+            </div>
+
+            <InfoRow icon={MapPin} label="Full Address" value={user?.address} />
+          </div>
+
+          {/* ===== GEOLOCATION ===== */}
+          <div className="space-y-3">
+            <h3
+              className="text-sm font-semibold"
+              style={{ color: "var(--color-text-primary)" }}
+            >
+              Geolocation
+            </h3>
+
+            <div className="grid grid-cols-2 gap-4">
+              <InfoRow
+                icon={Globe}
+                label="Latitude"
+                value={user?.geolocation?.lat}
+              />
+              <InfoRow
+                icon={Globe}
+                label="Longitude"
+                value={user?.geolocation?.lon}
+              />
+            </div>
+          </div>
+
+          {/* ===== DOCUMENTS ===== */}
+          <div className="space-y-3">
+            <h3
+              className="text-sm font-semibold"
+              style={{ color: "var(--color-text-primary)" }}
+            >
+              Documents
+            </h3>
+
+            <div className="grid grid-cols-2 gap-4">
+              <InfoRow
+                icon={FileText}
+                label="UIDAI"
+                value={user?.documents?.uidai}
+              />
+              <InfoRow
+                icon={FileText}
+                label="PAN"
+                value={user?.documents?.pan}
+              />
+            </div>
+          </div>
+
+          {/* ===== PAYMENT DETAILS ===== */}
+          <div className="space-y-3">
+            <h3
+              className="text-sm font-semibold"
+              style={{ color: "var(--color-text-primary)" }}
+            >
+              Payment Details
+            </h3>
+
+            <div className="grid grid-cols-2 gap-4">
+              <InfoRow
+                icon={CreditCard}
+                label="UPI ID"
+                value={user?.paymentDetails?.upi}
+              />
+              <InfoRow
+                icon={CreditCard}
+                label="IFSC Code"
+                value={user?.paymentDetails?.ifs_Code}
+              />
+            </div>
+
+            <InfoRow
+              icon={CreditCard}
+              label="Account Number"
+              value={user?.paymentDetails?.account_number}
+            />
+          </div>
         </div>
       </div>
       {openModal && <EditProfileModal onClose={() => setOpenModal(false)} />}
