@@ -19,6 +19,7 @@ app.use(morgan("dev"));
 app.use("/auth", authRouter); // Role based access control /auth, /restaurant, /rider, /customer
 app.use("/public", contactRouter);
 app.use("/user", userRouter);
+app.use("/restaurant", restaurantRouter);
 
 const PORT = process.env.PORT || 3000;
 

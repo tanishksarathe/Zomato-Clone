@@ -10,11 +10,11 @@ import {
   UserRoundPen,
 } from "lucide-react";
 import React from "react";
-import api from "../../config/API";
+import api from '../../config/API'
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/AuthContext";
 
-const SidebarDashboard = ({ active, setActive, collapsed, setCollapsed }) => {
+const RiderSidebar = ({ active, setActive, collapsed, setCollapsed }) => {
   const { setUser, setIsLogin, user } = useAuth();
 
   const list = [
@@ -103,4 +103,4 @@ const SidebarDashboard = ({ active, setActive, collapsed, setCollapsed }) => {
   );
 };
 
-export default SidebarDashboard;
+export default RiderSidebar;

@@ -89,7 +89,7 @@ const Login = () => {
           break;
       }
 
-      navigate("/user-dashboard");
+      navigate("/");
     } catch (error) {
       console.log(error);
       toast.error(error?.response?.data?.message || "Unknown error");

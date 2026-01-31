@@ -3,6 +3,7 @@ import {
   Headset,
   LogOut,
   Menu,
+  Notebook,
   ScanLine,
   ShoppingBag,
   SquareMenu,
@@ -10,11 +11,11 @@ import {
   UserRoundPen,
 } from "lucide-react";
 import React from "react";
-import api from "../../config/API";
+import api from '../../config/API'
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/AuthContext";
 
-const SidebarDashboard = ({ active, setActive, collapsed, setCollapsed }) => {
+const RestaurantSidebar = ({ active, setActive, collapsed, setCollapsed }) => {
   const { setUser, setIsLogin, user } = useAuth();
 
   const list = [
@@ -29,14 +30,19 @@ const SidebarDashboard = ({ active, setActive, collapsed, setCollapsed }) => {
       title: "Profile",
     },
     {
+      key: "menu",
+      icon: <Notebook size={15} />,
+      title: "Menu & Dishes",
+    },
+    {
       key: "order",
       icon: <ShoppingBag size={15} />,
       title: "Orders",
     },
     {
-      key: "transaction",
+      key: "account",
       icon: <ScanLine size={15} />,
-      title: "Transactions",
+      title: "Accounts",
     },
     {
       key: "help",
@@ -76,7 +82,7 @@ const SidebarDashboard = ({ active, setActive, collapsed, setCollapsed }) => {
           } Dashboard`}
         </div>
 
-        <div className="flex flex-col p-3 h-70 gap-3 font-semibold">
+        <div className="flex flex-col p-3 h-80 gap-3 font-semibold">
           {list.map((item, idx) => (
             <button
               key={idx}
@@ -103,4 +109,4 @@ const SidebarDashboard = ({ active, setActive, collapsed, setCollapsed }) => {
   );
 };
 
-export default SidebarDashboard;
+export default RestaurantSidebar;

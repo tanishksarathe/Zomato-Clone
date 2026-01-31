@@ -1,12 +1,9 @@
-import { Lock, Mail, Phone, Save, User, X } from "lucide-react";
+import { X } from "lucide-react";
 import React, { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
-import api from "../../config/API";
-import toast from "react-hot-toast";
 import Input from "../FormElements/Input";
-import Select from "../FormElements/Select";
 
-const EditProfileModal = ({ onClose }) => {
+const EditProfileModalRes = ({onClose}) => {
   const { user, setUser } = useAuth();
 
   const [loading, setLoading] = useState(false);
@@ -29,6 +26,8 @@ const EditProfileModal = ({ onClose }) => {
     documents: {
       uidai: user?.documents?.uidai || "",
       pan: user?.documents?.pan || "",
+      fssai: user?.documents?.fssai || "",
+      gst: user?.documents?.gst || "",
     },
     paymentDetails: {
       upi: user?.paymentDetails?.upi || "",
@@ -80,9 +79,9 @@ const EditProfileModal = ({ onClose }) => {
     setLoading(true);
 
     try {
-      console.log("Edit Profile", details);
+      console.log("Edit Restaurant Profile", details);
 
-      const response = await api.put("/user/update", details);
+      const response = await api.put("/restaurant/update", details);
 
       console.log(response.data);
 
@@ -91,7 +90,7 @@ const EditProfileModal = ({ onClose }) => {
         JSON.stringify(response.data.data),
       );
       setUser(response.data.data);
-      toast.success("User Updated Successfully");
+      toast.success("Restaurant/Manager Updated Successfully");
       onClose();
     } catch (error) {
       console.log(error);
@@ -127,7 +126,7 @@ const EditProfileModal = ({ onClose }) => {
                 className="text-center mb-6"
                 style={{ color: "var(--color-text-secondary)" }}
               >
-                Update your personal information
+                Update Restaurant
               </p>
 
               {/* Form */}
@@ -151,6 +150,12 @@ const EditProfileModal = ({ onClose }) => {
                     label="phone"
                     value={details.phone}
                     name="phone"
+                    onChangeMethod={handleChange}
+                  />
+                  <Input
+                    label="Restaurant Name"
+                    value={details.restaurantName}
+                    name="restaurantName"
                     onChangeMethod={handleChange}
                   />
                   {/* <Input label="Password" type="password" /> */}
@@ -390,17 +395,29 @@ const EditProfileModal = ({ onClose }) => {
                   </h3>
 
                   <div className="grid grid-cols-2 gap-4">
-                    {/* <Input label="GST Number" /> */}
-                    {/* <Input label="FSSAI" /> */}
-                    {/* <Input label="RC" /> */}
-                    {/* <Input label="Driving License" /> */}
+                    <Input
+                      label="GST Number"
+                      value={details.documents.gst}
+                      name="gst"
+                      onChangeMethod={(e) =>
+                        handleNestedChange("documents", "gst", e.target.value)
+                      }
+                    />
+                    <Input
+                      label="FSSAI License No."
+                      value={details.documents.fssai}
+                      name="fssai"
+                      onChangeMethod={(e) =>
+                        handleNestedChange("documents", "fssai", e.target.value)
+                      }
+                    />
                     <Input
                       label="UIDAI"
                       value={details.documents.uidai}
                       name="upi"
                       onChangeMethod={(e) =>
                         handleNestedChange("documents", "uidai", e.target.value)
-                      }
+                    }
                     />
                     <Input
                       label="PAN"
@@ -408,8 +425,10 @@ const EditProfileModal = ({ onClose }) => {
                       name="upi"
                       onChangeMethod={(e) =>
                         handleNestedChange("documents", "pan", e.target.value)
-                      }
+                    }
                     />
+                    {/* <Input label="RC" /> */}
+                    {/* <Input label="Driving License" /> */}
                   </div>
                 </div>
 
@@ -441,4 +460,4 @@ const EditProfileModal = ({ onClose }) => {
   );
 };
 
-export default EditProfileModal;
+export default EditProfileModalRes;

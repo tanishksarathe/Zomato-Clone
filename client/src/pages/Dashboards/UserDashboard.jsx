@@ -28,14 +28,14 @@ const UserDashboard = () => {
 
   if(role !== 'customer'){
     return (
-      <div className="w-fit p-5 mx-auto text-center bg-gray-100 border rounded-xl mt-5"><Ban color="red" />You are not logged in as Customer.</div>
+      <div className="w-fit flex gap-3 p-5 mx-auto text-center bg-gray-100 border rounded-xl mt-5"><Ban color="red" />You are not logged in as Customer.</div>
     )
   }
 
 
   return (
     <>
-      <div className="flex w-full h-full bg-(--color-background)">
+      <div className="flex w-full h-full bg-(--color-background) border">
         <div className={`transition-all duration-200 scroll-smooth ${collapsed ? "w-1/20" : "w-2/10"}`}>
     
         <SidebarDashboard collapsed={collapsed} setCollapsed={setCollapsed}  active={active} setActive={setActive} />

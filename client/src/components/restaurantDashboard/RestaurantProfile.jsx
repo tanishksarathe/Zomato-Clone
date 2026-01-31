@@ -1,23 +1,25 @@
-import React, { useEffect, useState } from "react";
-import { useAuth } from "../../context/AuthContext";
-import EditProfileModal from "../modals/EditProfileModal";
-import { CameraIcon, Mail, Phone } from "lucide-react";
-import UserImage from "../../assets/image.png";
-import api from "../../config/API";
-import toast from "react-hot-toast";
+import React, { useState } from "react";
 import InfoRow from "../FormElements/InfoRow";
-import { MapPin, User, CreditCard, FileText, Globe } from "lucide-react";
-import ResetPasswordModal from "../modals/ResetPasswordModal";
+import {
+  CameraIcon,
+  CreditCard,
+  FileText,
+  Globe,
+  Mail,
+  MapPin,
+  Phone,
+  User,
+} from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
+import toast from "react-hot-toast";
+import EditProfileModalRes from "../modals/EditProfileModalRes";
+const RestaurantProfile = () => {
 
-const UserProfile = () => {
-  
-  const [openModal, setOpenModal] = useState(false);
+  const [openModalRes, setOpenModalRes] = useState(false);
 
-  const [openResetPasswordModal, setOpenResetPasswordModal] = useState(false);
+  // const [openResetPasswordModal, setOpenResetPasswordModal] = useState(false);
 
   const { user, setUser } = useAuth();
-
-  // const [photo, setPhoto] = useState(""); // jo backend tk photo lekr jaaegi
 
   const [preview, setPreview] = useState("");
 
@@ -25,10 +27,9 @@ const UserProfile = () => {
     const form_data = new FormData();
 
     form_data.append("image", photo); // image file
-    // form_data.append("imageURL", preview); //image URL
 
     try {
-      const res = await api.patch("/user/photo-update", form_data);
+      // const res = await api.patch("/user/photo-update", form_data);
       console.log("Response data here :", res.data.data);
       setUser(res.data.data);
 
@@ -51,7 +52,7 @@ const UserProfile = () => {
     changePhoto(file);
   };
 
-  console.log("User from user Profile : ",user);
+  console.log("User from user Profile : ", user);
 
   return (
     <>
@@ -79,7 +80,7 @@ const UserProfile = () => {
                 htmlFor="imageUpload"
                 className="text-(--color-primary) group-hover:text-(--color-secondary)"
               >
-                <CameraIcon size={20}/>
+                <CameraIcon size={20} />
               </label>
               <input
                 type="file"
@@ -112,7 +113,7 @@ const UserProfile = () => {
                   : user?.role === "manager"
                     ? "Manager"
                     : ""}
-                    <br /> Since {user?.createdAt?.slice(0,4)}
+              <br /> Since {user?.createdAt?.slice(0, 4)}
             </p>
           </div>
 
@@ -150,7 +151,7 @@ const UserProfile = () => {
           {/* Footer Button */}
           <div className="flex gap-4 px-2 flex-col justify-center items-start">
             <button
-              onClick={() => setOpenModal(true)}
+              onClick={() => setOpenModalRes(true)}
               className="px-3 py-2 w-30 rounded-xl font-semibold transition"
               style={{
                 backgroundColor: "var(--color-primary)",
@@ -167,7 +168,7 @@ const UserProfile = () => {
               Edit Profile
             </button>
             <button
-              onClick={()=> setOpenResetPasswordModal(true)}
+              // onClick={() => setOpenResetPasswordModal(true)}
               className=" px-3 py-2 rounded-xl font-semibold transition"
               style={{
                 backgroundColor: "var(--color-primary)",
@@ -204,6 +205,7 @@ const UserProfile = () => {
                       : ""
               }
             />
+              <InfoRow icon={User} label="Restaurant Name" value={user?.restaurantName} />
             <InfoRow
               icon={User}
               label="Gender"
@@ -302,8 +304,17 @@ const UserProfile = () => {
                 label="IFSC Code"
                 value={user?.paymentDetails?.ifs_Code}
               />
+              <InfoRow
+                icon={CreditCard}
+                label="GST No."
+                value={user?.paymentDetails?.gst}
+              />
+              <InfoRow
+                icon={CreditCard}
+                label="FSSAI Licence No."
+                value={user?.paymentDetails?.fssai}
+              />
             </div>
-
             <InfoRow
               icon={CreditCard}
               label="Account Number"
@@ -312,10 +323,10 @@ const UserProfile = () => {
           </div>
         </div>
       </div>
-      {openModal && <EditProfileModal onClose={() => setOpenModal(false)} />}
-        {openResetPasswordModal && <ResetPasswordModal onClose={()=> setOpenResetPasswordModal(false)}/>}
+      {openModalRes && <EditProfileModalRes onClose={() => setOpenModalRes(false)} />}
+      {/* {openResetPasswordModal && <ResetPasswordModal onClose={()=> setOpenResetPasswordModal(false)}/>} */}
     </>
   );
 };
 
-export default UserProfile;
+export default RestaurantProfile;

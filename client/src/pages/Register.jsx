@@ -67,6 +67,7 @@ const Register = () => {
 
       toast.success(response.data.message);
 
+      navigate('/');
     } catch (error) {
       toast.error(error?.response?.data?.message || "Unknown Error");
     } finally {

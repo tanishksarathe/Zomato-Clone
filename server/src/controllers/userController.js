@@ -1,5 +1,6 @@
 import cloudinary from "../config/cloudinary.js";
 import User from "../models/userModel.js";
+import bcrypt from "bcrypt";
 
 export const userUpdate = async (req, res, next) => {
   try {
@@ -116,11 +117,13 @@ export const userChangePhoto = async (req, res, next) => {
       await cloudinary.uploader.destroy(currentUser.photo.publicID);
     }
 
+    // convert the image from req.file from buffer into base 64
+
     const b64 = Buffer.from(dp.buffer).toString("base64");
 
     const dataURI = `data:${dp.mimetype};base64,${b64}`;
 
-    console.log("Data URI = ", dataURI.slice(0, 100));
+    // console.log("Data URI = ", dataURI.slice(0, 100));
 
     const result = await cloudinary.uploader.upload(dataURI, {
       folder: "GrabMyMeal/User",
@@ -139,5 +142,42 @@ export const userChangePhoto = async (req, res, next) => {
     res.status(200).json({ message: "Photo Updated", data: currentUser });
   } catch (error) {
     next(error);
+  }
+};
+
+export const userResetPassword = async (req, res, next) => {
+  try {
+    const currentUser = req.user;
+
+    const { oldPassword, newPassword } = req.body;
+
+    if (!oldPassword || !newPassword) {
+      const error = new Error("All Fields Required");
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    const isReal = await bcrypt.compare(oldPassword, currentUser.password);
+
+    if (!isReal) {
+      const error = new Error("Password Mismatch");
+      error.statusCode = 401;
+      return next(error);
+    }
+
+    const salt = await bcrypt.genSalt(10);
+
+    const hashPassword = await bcrypt.hash(newPassword, salt);
+
+    currentUser.password = hashPassword;
+
+    await currentUser.save();
+
+    res
+      .status(200)
+      .json({ message: "Password Updated Successfully", data: currentUser });
+      
+  } catch (error) {
+    next(next);
   }
 };
