@@ -7,6 +7,7 @@ import authRouter from "./src/routes/routes.js";
 import morgan from "morgan";
 import contactRouter from "./src/routes/publicRoutes.js";
 import userRouter from "./src/routes/userRouter.js";
+import restaurantRouter from './src/routes/restaurantRoutes.js'
 
 const app = express(); // main server
 

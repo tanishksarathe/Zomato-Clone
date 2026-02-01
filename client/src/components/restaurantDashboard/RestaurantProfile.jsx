@@ -13,11 +13,14 @@ import {
 import { useAuth } from "../../context/AuthContext";
 import toast from "react-hot-toast";
 import EditProfileModalRes from "../modals/EditProfileModalRes";
+import ResetPasswordModal from '../modals/ResetPasswordModal';
+
+
 const RestaurantProfile = () => {
 
   const [openModalRes, setOpenModalRes] = useState(false);
 
-  // const [openResetPasswordModal, setOpenResetPasswordModal] = useState(false);
+  const [openResetPasswordModal, setOpenResetPasswordModal] = useState(false);
 
   const { user, setUser } = useAuth();
 
@@ -29,7 +32,7 @@ const RestaurantProfile = () => {
     form_data.append("image", photo); // image file
 
     try {
-      // const res = await api.patch("/user/photo-update", form_data);
+      const res = await api.patch("/restaurant/updateRestaurantImage", form_data);
       console.log("Response data here :", res.data.data);
       setUser(res.data.data);
 
@@ -168,7 +171,7 @@ const RestaurantProfile = () => {
               Edit Profile
             </button>
             <button
-              // onClick={() => setOpenResetPasswordModal(true)}
+              onClick={() => setOpenResetPasswordModal(true)}
               className=" px-3 py-2 rounded-xl font-semibold transition"
               style={{
                 backgroundColor: "var(--color-primary)",
@@ -324,7 +327,7 @@ const RestaurantProfile = () => {
         </div>
       </div>
       {openModalRes && <EditProfileModalRes onClose={() => setOpenModalRes(false)} />}
-      {/* {openResetPasswordModal && <ResetPasswordModal onClose={()=> setOpenResetPasswordModal(false)}/>} */}
+      {openResetPasswordModal && <ResetPasswordModal onClose={()=> setOpenResetPasswordModal(false)}/>}
     </>
   );
 };
