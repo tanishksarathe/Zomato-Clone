@@ -3,7 +3,6 @@ import React from "react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import api from "../../config/API";
-import { useAuth } from "../../context/AuthContext";
 
 const ForgetPasswordModal = ({ onClose }) => {
   const [loading, setLoading] = useState(false);
@@ -16,8 +15,6 @@ const ForgetPasswordModal = ({ onClose }) => {
     newPassword: "",
     cnfPassword: "",
   });
-
-  const { setUser } = useAuth();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -37,7 +34,6 @@ const ForgetPasswordModal = ({ onClose }) => {
 
         toast.success(response?.data?.message);
 
-        setUser(response.data.data);
         onClose();
       } else if (isOTPSent) {
         response = await api.post("/auth/verifyOtp", details);
@@ -55,8 +51,6 @@ const ForgetPasswordModal = ({ onClose }) => {
       toast.error(error?.response?.data?.message || "Unknown Error");
     } finally {
       setLoading(false);
-      setIsOTPSent(false);
-      setIsOtpVerified(false);
     }
   };
 

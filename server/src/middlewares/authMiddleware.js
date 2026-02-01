@@ -34,3 +34,38 @@ export const protect = async(req,res,next) =>{
         next(error);
     }
 }
+
+
+export const forgotPasswordProtect = async(req,res,next) =>{
+    try {
+        
+        const biscuit = req.cookies.otpToken;
+        console.log("Token Recieved from cookies : ",biscuit);
+        
+        const tea = jwt.verify(biscuit, process.env.JWT_SECRET)
+
+        console.log("Decoded value :",tea);
+
+        if(!tea){
+            const error = new Error("Unauthorized! Please try again...");
+            error.statusCode = 401;
+            return next(error);
+        }
+
+        const verifiedUser = await User.findById(tea.id);
+
+        if(!verifiedUser){
+            const error = new Error("Unauthorized! Please try again...");
+            error.statusCode = 401;
+            return next(error);
+        }
+
+        // to sent data to next that is controller;
+
+        req.user = verifiedUser;
+
+        next();
+    } catch (error) {
+        next(error);
+    }
+}

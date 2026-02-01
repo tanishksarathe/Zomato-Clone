@@ -14,6 +14,7 @@ import { useAuth } from "../../context/AuthContext";
 import toast from "react-hot-toast";
 import EditProfileModalRes from "../modals/EditProfileModalRes";
 import ResetPasswordModal from '../modals/ResetPasswordModal';
+import api from '../../config/API'
 
 
 const RestaurantProfile = () => {
@@ -39,7 +40,7 @@ const RestaurantProfile = () => {
       console.log("User", user);
       sessionStorage.setItem("GrabMyMeal User", JSON.stringify(res.data.data));
 
-      toast.success(res?.data?.message);
+      toast.success(res?.data?.message || "Profile Photo Updated");
     } catch (error) {
       console.log(error);
       toast.error(error?.response?.data?.message || "Unknown Error");
@@ -105,7 +106,7 @@ const RestaurantProfile = () => {
             </h2>
 
             <p
-              className="text-sm mb-6 text-center justify-center items-center w-45 flex mx-auto"
+              className="text-sm mb-6 text-center justify-center items-center w-45 flex mx-auto rounded-full"
               style={{ color: "var(--color-text-secondary)" }}
             >
               Active{" "}

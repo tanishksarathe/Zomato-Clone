@@ -2,6 +2,8 @@ import { X } from "lucide-react";
 import React, { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import Input from "../FormElements/Input";
+import api from '../../config/API'
+import toast from "react-hot-toast";
 
 const EditProfileModalRes = ({onClose}) => {
   const { user, setUser } = useAuth();
@@ -19,6 +21,7 @@ const EditProfileModalRes = ({onClose}) => {
     address: user?.address || "",
     state: user?.state || "",
     pin: user?.pin || "",
+    restaurantName: user?.restaurantName || "",
     geolocation: {
       lat: user?.geolocation?.lat || "",
       lon: user?.geolocation?.lon || "",

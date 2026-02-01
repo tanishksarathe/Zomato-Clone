@@ -116,7 +116,7 @@ export const updateRestaurantImage = async (req, res, next) => {
     // console.log("Data URI = ", dataURI.slice(0, 100));
 
     const result = await cloudinary.uploader.upload(dataURI, {
-      folder: "GrabMyMeal/User",
+      folder: "GrabMyMeal/Restaurant",
       width: 500,
       height: 500,
       crop: "fill",

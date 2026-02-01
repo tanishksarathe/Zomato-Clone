@@ -1,6 +1,6 @@
 import User from "../models/userModel.js";
 import bcrypt, { genSalt } from "bcrypt";
-import { genToken } from "../utils/authToken.js";
+import { genOTPToken, genToken } from "../utils/authToken.js";
 import { sendForgotPasswordOTPService } from "../utils/sendEmailService.js";
 import OTP from "../models/otpModel.js";
 
@@ -50,6 +50,7 @@ export const userRegistration = async (req, res, next) => {
   }
 };
 
+
 export const userLogin = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -90,12 +91,12 @@ export const userLogin = async (req, res, next) => {
 
 export const userLogout = async (req, res, next) => {
   try {
-    res.clearCookie("oreo");
-    res.status(200).json({ message: "Logout Successful" });
+    res.status(200).clearCookie("oreo").json({ message: "Logout Successful" });
   } catch (error) {
     next(error);
   }
 };
+
 
 export const userGenOTP = async (req, res, next) => {
   try {
@@ -123,7 +124,6 @@ export const userGenOTP = async (req, res, next) => {
 
     await OTP.create({
       otp: hashedOTP,
-      createdAt: new Date(),
       email,
     });
 
@@ -134,6 +134,7 @@ export const userGenOTP = async (req, res, next) => {
     next(error);
   }
 };
+
 
 export const userOTPVerification = async (req, res, next) => {
   try {
@@ -155,8 +156,16 @@ export const userOTPVerification = async (req, res, next) => {
       return next(error);
     }
 
-    // if expired than also out
+    const existingUser = await User.findOne({ email });
 
+    if (!existingUser) {
+      const error = new Error("Email Not Registered");
+      error.statusCode = 402;
+      return next(error);
+    }
+    
+    // if expired than also out
+    
     if(Date.now() - new Date(usermon.createdAt).getTime() > 2 * 60 * 1000){
       const error = new Error("OTP Expired");
       error.statusCode = 401;
@@ -170,12 +179,16 @@ export const userOTPVerification = async (req, res, next) => {
       error.statusCode = 401;
       return next(error);
     }
+    
+    
+    await genOTPToken(existingUser, res);
 
     res.status(200).json({ message: "OTP verified" });
   } catch (error) {
     next(error);
   }
 };
+
 
 export const updateForgotPassword = async (req, res, next) => {
   try {
@@ -187,23 +200,18 @@ export const updateForgotPassword = async (req, res, next) => {
       return next(error);
     }
 
-    const existingUser = await User.findOne({ email });
-
-    if (!existingUser) {
-      const error = new Error("Email Not Registered");
-      error.statusCode = 402;
-      return next(error);
-    }
+    const currentUser = req.user;
 
     const salt = await bcrypt.genSalt(10);
 
     const hashedpasswordNew = await bcrypt.hash(newPassword, salt);
 
-    existingUser.password = hashedpasswordNew;
+    currentUser.password = hashedpasswordNew;
 
-    await existingUser.save();
+    await currentUser.save();
 
-    res.status(200).json({ message: "Password Updated", data: existingUser });
+    res.status(200).clearCookie("otpToken").json({ message: "Password Updated"});
+
   } catch (error) {
     next(error);
   }

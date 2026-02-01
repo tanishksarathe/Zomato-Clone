@@ -118,7 +118,7 @@ const Login = () => {
           {/* Header */}
           <div className="mb-8 text-center">
             <h2
-              className="text-2xl font-semibold"
+              className="text-3xl font-semibold"
               style={{ color: "var(--color-text-primary)" }}
             >
               Login
