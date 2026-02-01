@@ -1,5 +1,5 @@
 import User from "../models/userModel.js";
-import bcrypt from "bcrypt";
+import bcrypt, { genSalt } from "bcrypt";
 import { genToken } from "../utils/authToken.js";
 import { sendForgotPasswordOTPService } from "../utils/sendEmailService.js";
 import OTP from "../models/otpModel.js";
@@ -139,8 +139,6 @@ export const userOTPVerification = async (req, res, next) => {
   try {
     const { email, otp } = req.body;
 
-    console.log("Aaa gye otp verification method me", req.body);
-
     if (!email || !otp) {
       const error = new Error("OTP Required...");
       error.statusCode = 400;
@@ -148,8 +146,8 @@ export const userOTPVerification = async (req, res, next) => {
     }
 
     // compare the latest otp only logic left
-    const usermon = await OTP.findOne({ email }).sort({createdAt : -1});
-    
+    const usermon = await OTP.findOne({ email }).sort({ createdAt: -1 });
+
     console.log("Usermon", usermon);
     if (!usermon) {
       const error = new Error("Email Not Registered");
@@ -159,21 +157,53 @@ export const userOTPVerification = async (req, res, next) => {
 
     // if expired than also out
 
-    console.log("Shows the exact type of OTP : ",typeof otp);
+    if(Date.now() - new Date(usermon.createdAt).getTime() > 2 * 60 * 1000){
+      const error = new Error("OTP Expired");
+      error.statusCode = 401;
+      return next(error);
+    }
 
     const verifyOTP = await bcrypt.compare(otp, usermon.otp);
-
-    console.log("verifyOTP ka result", verifyOTP);
 
     if (!verifyOTP) {
       const error = new Error("OTP Invalid");
       error.statusCode = 401;
-      return next(next);
+      return next(error);
     }
 
-    console.log("Ho gyi verify OTP ab response send kr rhe h frontend ko");
-
     res.status(200).json({ message: "OTP verified" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateForgotPassword = async (req, res, next) => {
+  try {
+    const { email, newPassword } = req.body;
+
+    if (!email || !newPassword) {
+      const error = new Error("All Fields Required");
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    const existingUser = await User.findOne({ email });
+
+    if (!existingUser) {
+      const error = new Error("Email Not Registered");
+      error.statusCode = 402;
+      return next(error);
+    }
+
+    const salt = await bcrypt.genSalt(10);
+
+    const hashedpasswordNew = await bcrypt.hash(newPassword, salt);
+
+    existingUser.password = hashedpasswordNew;
+
+    await existingUser.save();
+
+    res.status(200).json({ message: "Password Updated", data: existingUser });
   } catch (error) {
     next(error);
   }

@@ -4,7 +4,8 @@ import {
   userLogout,
   userRegistration,
   userGenOTP,
-  userOTPVerification
+  userOTPVerification,
+  updateForgotPassword
 } from "../controllers/authController.js";
 
 const route = express.Router();
@@ -15,5 +16,6 @@ route.post("/login", userLogin);
 
 route.post("/genOtp", userGenOTP);
 route.post("/verifyOtp", userOTPVerification);
+route.patch("/forgot-password", updateForgotPassword)
 
 export default route;

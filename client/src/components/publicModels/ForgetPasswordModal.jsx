@@ -1,8 +1,9 @@
-import { X } from "lucide-react";
+import { Loader, X } from "lucide-react";
 import React from "react";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import api from '../../config/API'
+import api from "../../config/API";
+import { useAuth } from "../../context/AuthContext";
 
 const ForgetPasswordModal = ({ onClose }) => {
   const [loading, setLoading] = useState(false);
@@ -15,6 +16,8 @@ const ForgetPasswordModal = ({ onClose }) => {
     newPassword: "",
     cnfPassword: "",
   });
+
+  const { setUser } = useAuth();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -29,24 +32,19 @@ const ForgetPasswordModal = ({ onClose }) => {
     let response;
 
     try {
-      if (isOTPSent) {
+      if (isOtpVerified && isOTPSent) {
+        response = await api.patch("/auth/forgot-password", details);
 
-        console.log("OTP entered by user : ",details.otp)
+        toast.success(response?.data?.message);
 
+        setUser(response.data.data);
+        onClose();
+      } else if (isOTPSent) {
         response = await api.post("/auth/verifyOtp", details);
 
         toast.success(response?.data?.message);
 
         setIsOtpVerified(true);
-
-        if (isOtpVerified) {
-        
-          //
-          //
-          //
-
-          console.log("OTP already verified,, please update your password");
-        }
       } else {
         response = await api.post("/auth/genOtp", details);
         toast.success(response?.data?.message);
@@ -57,6 +55,8 @@ const ForgetPasswordModal = ({ onClose }) => {
       toast.error(error?.response?.data?.message || "Unknown Error");
     } finally {
       setLoading(false);
+      setIsOTPSent(false);
+      setIsOtpVerified(false);
     }
   };
 
@@ -83,7 +83,7 @@ const ForgetPasswordModal = ({ onClose }) => {
                 className="text-3xl font-bold text-center mb-2"
                 style={{ color: "var(--color-text-primary)" }}
               >
-                Forget Password
+                Forgot Password
               </h2>
               <p
                 className="text-center mb-6"
@@ -109,7 +109,8 @@ const ForgetPasswordModal = ({ onClose }) => {
                       color: "var(--color-text-primary)",
                     }}
                     onChange={handleChange}
-                    disabled={isOTPSent}
+                    readOnly={isOTPSent}
+                    required
                   />
                   {isOTPSent && (
                     <>
@@ -121,12 +122,14 @@ const ForgetPasswordModal = ({ onClose }) => {
                         name="otp"
                         placeholder="Enter OTP recieved in email"
                         value={details.otp}
+                        readOnly={isOtpVerified}
                         className="rounded-xl px-4 py-3 text-sm outline-none"
                         style={{
                           backgroundColor: "var(--color-background)",
                           color: "var(--color-text-primary)",
                         }}
                         onChange={handleChange}
+                        required
                       />
                     </>
                   )}
@@ -140,13 +143,15 @@ const ForgetPasswordModal = ({ onClose }) => {
                         name="newPassword"
                         placeholder="Enter OTP recieved in email"
                         value={details.newPassword}
-                        className="rounded-xl px-4 py-3 text-sm outline-none"
+                        className={`rounded-xl px-4 py-3 text-sm outline-none ring ${details.newPassword != "" && details.cnfPassword !== "" && details.cnfPassword === details.newPassword ? "ring-green-600" : "ring-red-600"}`}
                         style={{
                           backgroundColor: "var(--color-background)",
                           color: "var(--color-text-primary)",
                         }}
                         onChange={handleChange}
+                        required
                       />
+
                       <label className="text-xs font-medium text-(--color-text-secondary)">
                         Confirm New Password
                       </label>
@@ -155,20 +160,19 @@ const ForgetPasswordModal = ({ onClose }) => {
                         name="cnfPassword"
                         placeholder="Enter OTP recieved in email"
                         value={details.cnfPassword}
-                        className="rounded-xl px-4 py-3 text-sm outline-none"
+                        className={`rounded-xl px-4 py-3 text-sm outline-none ring ${details.newPassword != "" && details.cnfPassword !== "" && details.cnfPassword === details.newPassword ? "ring-green-600" : "ring-red-600"}`}
                         style={{
                           backgroundColor: "var(--color-background)",
                           color: "var(--color-text-primary)",
                         }}
                         onChange={handleChange}
-                        // dont make the button enable untill both passwords same
+                        required
                       />
                     </>
                   )}
                 </div>
                 {/* ===== SUBMIT ===== */}
                 <button
-                  onClick={handleSubmit}
                   type="submit"
                   className="w-full py-3 rounded-xl font-semibold transition"
                   style={{
@@ -186,7 +190,13 @@ const ForgetPasswordModal = ({ onClose }) => {
                 >
                   {loading ? (
                     <>
-                      <span className="animate-spin transition-all">C</span> Loading...
+                      <div className="flex justify-center items-center">
+                        L
+                        <span className="animate-spin transition-all">
+                          <Loader />
+                        </span>{" "}
+                        ading...
+                      </div>
                     </>
                   ) : isOTPSent ? (
                     isOtpVerified ? (

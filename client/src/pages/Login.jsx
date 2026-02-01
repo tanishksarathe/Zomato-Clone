@@ -200,13 +200,14 @@ const Login = () => {
               </div>
               <div className="flex justify-end">
                 <button
+                type="button"
                   onClick={(e) => {
                     e.preventDefault();
                     setOpenForgetPasswordModel(true);
                   }}
                   className="text-blue-800 text-sm cursor-pointer"
                 >
-                  Forget password?
+                  Forgot password?
                 </button>
               </div>
               <div className="text-red-600 text-[12px]">
