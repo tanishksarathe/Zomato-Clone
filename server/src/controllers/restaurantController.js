@@ -1,5 +1,7 @@
 import cloudinary from "../config/cloudinary.js";
+import { Menu } from "../models/restaurantMenu.js";
 import User from "../models/userModel.js";
+import { uploadImagesToCloudinary } from "../utils/imageStoreService.js";
 
 export const updateRestaurant = async (req, res, next) => {
   try {
@@ -130,6 +132,71 @@ export const updateRestaurantImage = async (req, res, next) => {
     await currentUser.save();
 
     res.status(200).json({ message: "Photo Updated", data: currentUser });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const restaurantMenuPost = async (req, res, next) => {
+  try {
+    const {
+      dishName,
+      cuisine,
+      type,
+      description,
+      price,
+      availability,
+      preperationTime,
+      servingSize,
+    } = req.body;
+
+    if (
+      !dishName ||
+      !cuisine ||
+      !type ||
+      !description ||
+      !price ||
+      !availability ||
+      !preperationTime ||
+      !servingSize
+    ) {
+      const error = new Error("All Fields Required");
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    const currentUser = req.user;
+
+    console.log("Files from multer", req.files);
+
+    const images = await uploadImagesToCloudinary(req.files);
+
+    const newItems = await Menu.create({
+      restaurantID: currentUser._id,
+      dishName,
+      cuisine,
+      type,
+      description,
+      price,
+      availability,
+      preperationTime,
+      servingSize,
+      image:images,
+    });
+
+    res.status(200).json({ message: "Item Added Succesfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const restrauntMenuGet = async (req, res, next) => {
+  try {
+    const currentUser = req.user;
+
+    const menuTable = await Menu.find({ restaurantID: currentUser._id });
+
+    res.status(200).json({ message: "Fetched Successfully", data: menuTable });
   } catch (error) {
     next(error);
   }

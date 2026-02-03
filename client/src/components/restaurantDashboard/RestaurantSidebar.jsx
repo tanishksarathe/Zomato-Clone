@@ -66,7 +66,7 @@ const RestaurantSidebar = ({ active, setActive, collapsed, setCollapsed }) => {
 
   return (
     <>
-      <div className="shadow-2xl rounded-xl mt-1 ml-1 bg-(--color-accent-soft)">
+      <div className="shadow-2xl fixed rounded-xl mt-1 ml-1 bg-(--color-accent-soft)">
         <div
           className={`p-3 text-nowrap font-bold pb-3 border-b flex text-xl justify-start items-center gap-2`}
         >
@@ -95,7 +95,7 @@ const RestaurantSidebar = ({ active, setActive, collapsed, setCollapsed }) => {
         </div>
       </div>
 
-      <div className="shadow-2xl rounded-xl self-start mt-1 ml-1 bg-(--color-accent-soft) h-fit">
+      <div className="shadow-2xl rounded-xl fixed bottom-5 self-start mt-1 ml-1 bg-(--color-accent-soft) h-fit">
         <div className="flex flex-col p-3 h-fit gap-3 font-semibold">
           <button
             onClick={handleLogout}
