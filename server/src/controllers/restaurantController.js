@@ -181,7 +181,7 @@ export const restaurantMenuPost = async (req, res, next) => {
       availability,
       preperationTime,
       servingSize,
-      image:images,
+      image: images,
     });
 
     res.status(200).json({ message: "Item Added Succesfully" });
@@ -200,4 +200,38 @@ export const restrauntMenuGet = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+};
+
+export const updateMenuItem = async (req, res, next) => {
+  const { id } = req.params;
+
+  console.log(id);
+
+  const {
+    dishName,
+    cuisine,
+    type,
+    description,
+    price,
+    availability,
+    preperationTime,
+    servingSize,
+  } = req.body;
+
+  const updtaedItem = await Menu.findByIdAndUpdate(
+    id,
+    {
+      dishName,
+      cuisine,
+      type,
+      description,
+      price,
+      availability,
+      preperationTime,
+      servingSize,
+    },
+    { new: true },
+  );
+
+  res.status(200).json({ message: "Menu Items Updated Successfully" });
 };

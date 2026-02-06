@@ -5,6 +5,7 @@ import {
   updateRestaurant,
   updateRestaurantImage,
   restrauntMenuGet,
+  updateMenuItem,
 } from "../controllers/restaurantController.js";
 import multer from "multer";
 
@@ -24,5 +25,9 @@ router
   .route("/restaurantMenu")
   .post(protect, managerProtect, uploads.array("menuImage"), restaurantMenuPost)
   .get(protect, restrauntMenuGet);
+
+router
+  .route("/update-menu-item/:id")
+  .put(protect, managerProtect, updateMenuItem);
 
 export default router;

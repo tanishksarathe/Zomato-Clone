@@ -12,20 +12,26 @@ import { useEffect, useState } from "react";
 import AddItemModel from "../modals/addItemModel";
 import toast from "react-hot-toast";
 import api from "../../config/API";
+import ViewMenuModal from "../modals/restaurantModals/ViewMenuModal";
+import EditMenuModal from "../modals/restaurantModals/editMenuModal";
 
 const RestaurantMenu = () => {
   const [menu, setMenu] = useState({});
+
+  const [openViewModal, setOpenViewModal] = useState(false);
+
+  const [openEditModal, setOpenEditModal] = useState(false);
 
   const [loading, setLoading] = useState(false);
 
   const [openAddModal, setOpenAddModal] = useState(false);
 
+  const [selectedItem, setSelectedItem] = useState(null);
+
   const fetchMenuItems = async () => {
     setLoading(true);
     try {
       const res = await api.get("/restaurant/restaurantMenu");
-
-      console.log(res.data.data);
 
       setMenu(res.data.data);
 
@@ -40,8 +46,8 @@ const RestaurantMenu = () => {
   };
 
   useEffect(() => {
-   if(!openAddModal) fetchMenuItems();
-  }, [openAddModal]);
+    if (!openAddModal && !openEditModal) fetchMenuItems();
+  }, [openAddModal, openEditModal]);
 
   return (
     <>
@@ -111,19 +117,20 @@ const RestaurantMenu = () => {
               <div className="overflow-x-auto">
                 <table className="w-full border border-[#F3C2A6] rounded-lg overflow-hidden">
                   <thead className="bg-[#F3C2A6] text-sm">
-                    <tr>
-                      <th className="p-3 text-left">S. No</th>
-                      <th className="p-3 text-left">Dish Name</th>
-                      <th className="p-3 text-left">Cuisine</th>
-                      <th className="p-3 text-left">Food Type</th>
-                      <th className="p-3 text-left">Price (INR)</th>
-                      <th className="p-3 text-left">Actions</th>
+                    <tr className="text-center">
+                      <th className="p-3">S. No</th>
+                      <th className="p-3">Dish Name</th>
+                      <th className="p-3">Cuisine</th>
+                      <th className="p-3">Food Type</th>
+                      <th className="p-3">Price (INR)</th>
+                      <th className="p-3">Actions</th>
+                      <th className="p-3">Availability</th>
                     </tr>
                   </thead>
 
                   <tbody className="text-sm bg-white">
                     {Array.from(menu).map((item, index) => (
-                      <tr key={index} className="border-t">
+                      <tr key={index} className="border-t text-center">
                         <td className="p-3">{index + 1}</td>
                         <td className="p-3 font-medium">{item.dishName}</td>
                         <td className="p-3">{item.cuisine}</td>
@@ -168,32 +175,47 @@ const RestaurantMenu = () => {
                                             ? "Sweet"
                                             : ""}
                         </td>
-                        <td className="p-3">{item.price}</td>
-                        <td className="p-3">
+                        <td className="p-3">₹{item.price}</td>
+                        <td className="p-3 flex justify-center items-center">
                           <div className="flex gap-2">
-                            <button className="flex items-center gap-1 bg-[#5A142B] text-white px-3 py-1 rounded-md text-md">
+                            <button
+                              onClick={() => {
+                                setOpenViewModal(true);
+                                setSelectedItem(item);
+                              }}
+                              className="flex items-center gap-1 bg-[#5A142B] text-white px-3 py-1 rounded-md text-md"
+                            >
                               <Eye size={14} /> View
                             </button>
-                            <button className="flex items-center gap-1 bg-[#E08A45] text-white px-3 py-1 rounded-md text-md">
+                            <button
+                              onClick={() => {
+                                setOpenEditModal(true);
+                                setSelectedItem(item);
+                              }}
+                              className="flex items-center gap-1 bg-[#E08A45] text-white px-3 py-1 rounded-md text-md"
+                            >
                               <Pencil size={14} /> Edit
                             </button>
-                            <button
-                              onClick={() => setAvailable(!menu.available)}
-                              className={`flex items-center w-28 justify-center gap-1 ${menu.available ? "bg-green-600" : "bg-red-600"} text-white px-3 py-1 rounded-md text-md`}
-                            >
-                              {menu.available ? (
-                                <span className="flex justify-center gap-1 items-center">
-                                  <CircleCheckBig size={15} />
-                                  Available
-                                </span>
-                              ) : (
-                                <span className="flex justify-center gap-1 items-center">
-                                  <BadgeAlert size={15} />
-                                  Unavailable
-                                </span>
-                              )}
-                            </button>
                           </div>
+                        </td>
+
+                        <td className="place-items-center-safe">
+                          <button
+                            type="button"
+                            className={`flex items-center w-28 justify-center gap-1 ${item.availability ? "text-green-600" : "text-red-600"} ${item.availability ? "bg-green-200" : "bg-red-200"} shadow hover:scale-[1.2] transition-all px-3 py-1 rounded-md text-md`}
+                          >
+                            {item.availability ? (
+                              <span className="flex justify-center gap-1 items-center">
+                                <CircleCheckBig size={15} />
+                                Available
+                              </span>
+                            ) : (
+                              <span className="flex justify-center gap-1 items-center">
+                                <BadgeAlert size={15} />
+                                Unavailable
+                              </span>
+                            )}
+                          </button>
                         </td>
                       </tr>
                     ))}
@@ -207,6 +229,18 @@ const RestaurantMenu = () => {
         </div>
       </div>
       {openAddModal && <AddItemModel onClose={() => setOpenAddModal(false)} />}
+      {openViewModal && (
+        <ViewMenuModal
+          selectedItem={selectedItem}
+          onClose={() => setOpenViewModal(false)}
+        />
+      )}
+      {openEditModal && (
+        <EditMenuModal
+          selectedItem={selectedItem}
+          onClose={() => setOpenEditModal(false)}
+        />
+      )}
     </>
   );
 };
