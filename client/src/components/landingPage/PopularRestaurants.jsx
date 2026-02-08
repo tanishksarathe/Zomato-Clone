@@ -1,6 +1,6 @@
 import { Star, ArrowRight } from "lucide-react";
 
-export default function PopularRestaurants() {
+const PopularRestaurants = () => {
   const restaurants = [
     {
       name: "Bella Italia",
@@ -108,7 +108,7 @@ export default function PopularRestaurants() {
                   </p>
                 </div>
 
-                <button className="w-full bg-(--color-accent-soft) hover:bg-(--color-primary) hover:text-white text-(--color-primary) font-medium py-2 rounded-lg transition">
+                <button className="w-full bg-(--color-accent-soft) hover:bg-(--color-primary) hover:text-white text-(--color-text-primary) font-medium py-2 rounded-lg transition">
                   Order Now
                 </button>
               </div>
@@ -119,3 +119,5 @@ export default function PopularRestaurants() {
     </section>
   );
 }
+
+export default PopularRestaurants

@@ -2,10 +2,10 @@ import { X } from "lucide-react";
 import React, { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import Input from "../FormElements/Input";
-import api from '../../config/API'
+import api from "../../config/API";
 import toast from "react-hot-toast";
 
-const EditProfileModalRes = ({onClose}) => {
+const EditProfileModalRes = ({ onClose }) => {
   const { user, setUser } = useAuth();
 
   const [loading, setLoading] = useState(false);
@@ -14,6 +14,12 @@ const EditProfileModalRes = ({onClose}) => {
     fullname: user.fullname,
     email: user.email,
     phone: user.phone,
+    owner: user?.owner || "",
+    description: user?.description || "",
+    timing: {
+      open: user?.timing?.open || "",
+      close: user?.timing?.close || "",
+    },
     role: user.role || "N/A",
     dob: user?.dob || "",
     gender: user?.gender || "N/A",
@@ -67,13 +73,13 @@ const EditProfileModalRes = ({onClose}) => {
   };
 
   const handleNestedChange = (parent, field, value) => {
-    setDetails({
-      ...details,
+    setDetails((prev) => ({
+      ...prev,
       [parent]: {
-        ...details[parent],
+        ...prev[parent],
         [field]: value,
       },
-    });
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -155,12 +161,7 @@ const EditProfileModalRes = ({onClose}) => {
                     name="phone"
                     onChangeMethod={handleChange}
                   />
-                  <Input
-                    label="Restaurant Name"
-                    value={details.restaurantName}
-                    name="restaurantName"
-                    onChangeMethod={handleChange}
-                  />
+
                   {/* <Input label="Password" type="password" /> */}
                 </div>
 
@@ -337,14 +338,46 @@ const EditProfileModalRes = ({onClose}) => {
                       label="Restaurant Name"
                       value={details.restaurantName}
                       name="restaurant_name"
-                      onChangeMethod={handleNestedChange}
+                      onChangeMethod={handleChange}
+                    />
+                    <Input
+                      label="About Restaurant"
+                      value={details.description}
+                      name="description"
+                      onChangeMethod={handleChange}
+                    />
+                    <Input
+                      label="Owner"
+                      value={details.owner}
+                      name="owner"
+                      onChangeMethod={handleChange}
                     />
                     <Input
                       label="Cuisine Type"
                       value={details.cuisine}
                       name="cuisine"
-                      onChangeMethod={handleNestedChange}
+                      onChangeMethod={handleChange}
                     />
+                    <div className="grid grid-cols-2 gap-4">
+                      <Input
+                        label="Opens at"
+                        type="time"
+                        value={details.timing.open}
+                        name="timing"
+                        onChangeMethod={(e) =>
+                          handleNestedChange("timing", "open", e.target.value)
+                        }
+                      />
+                      <Input
+                        label="Closes at"
+                        type="time"
+                        value={details.timing.close}
+                        name="timing"
+                        onChangeMethod={(e) =>
+                          handleNestedChange("timing", "close", e.target.value)
+                        }
+                      />
+                    </div>
                   </div>
                 )}
 
@@ -417,18 +450,18 @@ const EditProfileModalRes = ({onClose}) => {
                     <Input
                       label="UIDAI"
                       value={details.documents.uidai}
-                      name="upi"
+                      name="uidai"
                       onChangeMethod={(e) =>
                         handleNestedChange("documents", "uidai", e.target.value)
-                    }
+                      }
                     />
                     <Input
                       label="PAN"
                       value={details.documents.pan}
-                      name="upi"
+                      name="pan"
                       onChangeMethod={(e) =>
                         handleNestedChange("documents", "pan", e.target.value)
-                    }
+                      }
                     />
                     {/* <Input label="RC" /> */}
                     {/* <Input label="Driving License" /> */}

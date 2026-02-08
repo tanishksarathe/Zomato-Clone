@@ -2,7 +2,7 @@ import { User, Mail, Phone, Lock, Send, XCircle } from "lucide-react";
 import { useState } from "react";
 import api from "../config/API";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Register = () => {
   const [loading, setLoading] = useState(false);
@@ -10,12 +10,16 @@ const Register = () => {
 
   const navigate = useNavigate();
 
+  const location = useLocation();
+
+  const defaultRole = location?.state?.role;
+
   const [details, setDetails] = useState({
     fullname: "",
     email: "",
     phone: "",
     password: "",
-    role:""
+    role:defaultRole ||  "",
   });
 
   const handleChange = (e) => {

@@ -11,7 +11,11 @@ export const updateRestaurant = async (req, res, next) => {
       gender,
       phone,
       city,
+      cuisine,
       dob,
+      owner,
+      description,
+      timing,
       role,
       state,
       address,
@@ -32,12 +36,16 @@ export const updateRestaurant = async (req, res, next) => {
       !city ||
       !state ||
       !dob ||
+      !description ||
+      !owner ||
+      !timing|| 
       !address ||
       !documents ||
       !paymentDetails ||
       !geolocation ||
       !restaurantName ||
       !pin ||
+      !cuisine||
       !gender
     ) {
       const error = new Error("All Fields Required");
@@ -50,6 +58,8 @@ export const updateRestaurant = async (req, res, next) => {
       pan: documents.pan,
       fssai: documents.fssai,
       gst: documents.gst,
+      rc: documents.rc || "N/A",
+      dl: documents.dl || "N/A",
     };
 
     const payment = {
@@ -63,8 +73,13 @@ export const updateRestaurant = async (req, res, next) => {
       lon: geolocation.lon,
     };
 
+    const times={
+      open: timing.open,
+      close:timing.close,
+    }
+
     const updatedUser = await User.findByIdAndUpdate(
-      { _id: currentUser._id },
+      currentUser._id,
       {
         fullname,
         email: email.toLowerCase(),
@@ -72,7 +87,11 @@ export const updateRestaurant = async (req, res, next) => {
         role,
         city,
         state,
+        description,
+        owner,
+        timing:times,
         dob,
+        cuisine,
         restaurantName,
         gender,
         address,

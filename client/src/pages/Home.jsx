@@ -4,6 +4,9 @@ import '../components/landingPage/landing.css';
 import Features from "../components/LandingPage/Features";
 import PopularRestaurants from "../components/LandingPage/PopularRestaurants";
 import HowItWorks from "../components/LandingPage/HowItWorks";
+import Riders from "../components/landingPage/Riders";
+import CallToAction from "../components/landingPage/CallToAction";
+import Footer from "../components/landingPage/Footer";
 const Home = () => {
   return (
     <>
@@ -12,6 +15,9 @@ const Home = () => {
         <Features/>
         <PopularRestaurants/>
         <HowItWorks/>
+        <Riders/>
+        <CallToAction/>
+        <Footer/>
       </div>
     </>
   );

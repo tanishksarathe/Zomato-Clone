@@ -87,6 +87,33 @@ const userSchema = mongoose.Schema(
         return this.role == "manager" ? "N/A" : null;
       },
     },
+    owner: {
+      type: String,
+      required() {
+        return this.role == "manager";
+      },
+      default() {
+        return this.role == "manager" ? "N/A" : null;
+      },
+    },
+    rating: {
+      type: String,
+      required() {
+        return this.role === "manager";
+      },
+      default() {
+        return this.role === "manager" ? "N/A" : null;
+      },
+    },
+    description: {
+      type: String,
+      required() {
+        return this.role === "manager";
+      },
+      default() {
+        return this.role === "manager" ? "N/A" : null;
+      },
+    },
     cuisine: {
       type: String,
       required() {
@@ -94,6 +121,26 @@ const userSchema = mongoose.Schema(
       },
       default() {
         return this.role == "manager" ? "N/A" : null;
+      },
+    },
+    timing: {
+      open: {
+        type: String,
+        required() {
+          return this.role == "manager";
+        },
+        default() {
+          return this.role == "manager" ? "N/A" : null;
+        },
+      },
+      close: {
+        type: String,
+        required() {
+          return this.role == "manager";
+        },
+        default() {
+          return this.role == "manager" ? "N/A" : null;
+        },
       },
     },
     paymentDetails: {

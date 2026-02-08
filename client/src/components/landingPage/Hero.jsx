@@ -1,7 +1,7 @@
 import { Search, ArrowRight } from "lucide-react";
 import { FaFire } from "react-icons/fa";
 
-export default function Hero() {
+const Hero = () =>{
   return (
     <section className="w-full min-h-[80vh] flex items-center justify-center px-6 py-16">
       <div className="max-w-7xl w-full grid md:grid-cols-2 gap-10 items-center">
@@ -99,3 +99,4 @@ export default function Hero() {
     </section>
   );
 }
+ export default Hero

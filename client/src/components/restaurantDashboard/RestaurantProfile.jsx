@@ -1,29 +1,35 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import InfoRow from "../FormElements/InfoRow";
 import {
   CameraIcon,
   CreditCard,
   FileText,
   Globe,
+  Hotel,
   Mail,
   MapPin,
   Phone,
+  Timer,
+  TimerOff,
   User,
+  UserCheck,
+  UtensilsCrossed,
+  Venus,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import toast from "react-hot-toast";
 import EditProfileModalRes from "../modals/EditProfileModalRes";
-import ResetPasswordModal from '../modals/ResetPasswordModal';
-import api from '../../config/API'
-
+import ResetPasswordModal from "../modals/ResetPasswordModal";
+import api from "../../config/API";
 
 const RestaurantProfile = () => {
-
   const [openModalRes, setOpenModalRes] = useState(false);
 
   const [openResetPasswordModal, setOpenResetPasswordModal] = useState(false);
 
   const { user, setUser } = useAuth();
+
+  const { abc } = useRef(null);
 
   const [preview, setPreview] = useState("");
 
@@ -33,7 +39,10 @@ const RestaurantProfile = () => {
     form_data.append("image", photo); // image file
 
     try {
-      const res = await api.patch("/restaurant/updateRestaurantImage", form_data);
+      const res = await api.patch(
+        "/restaurant/updateRestaurantImage",
+        form_data,
+      );
       console.log("Response data here :", res.data.data);
       setUser(res.data.data);
 
@@ -71,12 +80,13 @@ const RestaurantProfile = () => {
           {/* Avatar */}
           <div
             className="w-24 h-24 rounded-full flex items-center justify-center mb-4 relative"
+            onClick={() => abc.current.click()}
             style={{ backgroundColor: "var(--color-accent-soft)" }}
           >
             <img
               src={preview || user?.photo?.url || UserImage}
               alt="avatar"
-              className="object-cover rounded-full p-1"
+              className="object-cover h-[inherit] w-[inherit] rounded-full p-1"
             />
 
             <div className="bottom-2 left-[75%] border bg-white p-1 rounded-full group flex gap-3 absolute group">
@@ -91,6 +101,7 @@ const RestaurantProfile = () => {
                 id="imageUpload"
                 className="hidden"
                 accept="image/*"
+                ref={abc}
                 onChange={handlePhotoChange}
               />
             </div>
@@ -106,17 +117,10 @@ const RestaurantProfile = () => {
             </h2>
 
             <p
-              className="text-sm mb-6 text-center justify-center items-center w-45 flex mx-auto rounded-full"
+              className="text-sm mb-6 text-center justify-center items-center capitalize w-45 flex mx-auto rounded-full"
               style={{ color: "var(--color-text-secondary)" }}
             >
-              Active{" "}
-              {user?.role === "customer"
-                ? "Customer"
-                : user?.role === "partner"
-                  ? "Rider"
-                  : user?.role === "manager"
-                    ? "Manager"
-                    : ""}
+              Active {user?.role}
               <br /> Since {user?.createdAt?.slice(0, 4)}
             </p>
           </div>
@@ -195,33 +199,64 @@ const RestaurantProfile = () => {
           style={{ backgroundColor: "var(--color-surface)" }}
         >
           {/* ===== BASIC INFO ===== */}
-          <div className="grid grid-cols-2 gap-4">
+
+          <div className="space-y-3">
+            <h3
+              className="text-sm font-semibold"
+              style={{ color: "var(--color-text-primary)" }}
+            >
+              Personal Info
+            </h3>
+
+            <div className="grid grid-cols-2 capitalize gap-4">
+              <InfoRow icon={User} label="Date of Birth" value={user?.dob} />
+              <InfoRow icon={Venus} label="Gender" value={user?.gender} />
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <h3
+              className="text-sm font-semibold"
+              style={{ color: "var(--color-text-primary)" }}
+            >
+              About Restaurant
+            </h3>
+
+            <div className="grid grid-cols-2 capitalize gap-4">
+              <InfoRow icon={UserCheck} label="Role" value={user?.role} />
+              <InfoRow
+                icon={UtensilsCrossed}
+                label="Owner"
+                value={user?.owner}
+              />
+              <InfoRow
+                icon={Hotel}
+                label="Restaurant Name"
+                value={user?.restaurantName}
+              />
+              <InfoRow
+                icon={UtensilsCrossed}
+                label="Cuisine"
+                value={user?.cuisine.split(",").map((l)=> (<span>{l}</span>) )}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <InfoRow
+                icon={Timer}
+                label="Opens at"
+                value={user?.timing?.open}
+              />
+              <InfoRow
+                icon={TimerOff}
+                label="Closes at"
+                value={user?.timing?.close}
+              />
+            </div>
             <InfoRow
-              icon={User}
-              label="Role"
-              value={
-                user?.role === "customer"
-                  ? "Customer"
-                  : user?.role === "partner"
-                    ? "Delivery Partner"
-                    : user?.role === "manager"
-                      ? "Restraunt Manager"
-                      : ""
-              }
+              icon={UtensilsCrossed}
+              label="Description"
+              value={user?.description}
             />
-              <InfoRow icon={User} label="Restaurant Name" value={user?.restaurantName} />
-            <InfoRow
-              icon={User}
-              label="Gender"
-              value={
-                user?.gender === "male"
-                  ? "Male"
-                  : user?.gender === "female"
-                    ? "Female"
-                    : ""
-              }
-            />
-            <InfoRow icon={User} label="Date of Birth" value={user?.dob} />
           </div>
 
           {/* ===== ADDRESS ===== */}
@@ -285,6 +320,16 @@ const RestaurantProfile = () => {
                 label="PAN"
                 value={user?.documents?.pan}
               />
+              <InfoRow
+                icon={CreditCard}
+                label="GST No."
+                value={user?.documents?.gst}
+              />
+              <InfoRow
+                icon={CreditCard}
+                label="FSSAI Licence No."
+                value={user?.documents?.fssai}
+              />
             </div>
           </div>
 
@@ -310,25 +355,19 @@ const RestaurantProfile = () => {
               />
               <InfoRow
                 icon={CreditCard}
-                label="GST No."
-                value={user?.paymentDetails?.gst}
-              />
-              <InfoRow
-                icon={CreditCard}
-                label="FSSAI Licence No."
-                value={user?.paymentDetails?.fssai}
+                label="Account Number"
+                value={user?.paymentDetails?.account_number}
               />
             </div>
-            <InfoRow
-              icon={CreditCard}
-              label="Account Number"
-              value={user?.paymentDetails?.account_number}
-            />
           </div>
         </div>
       </div>
-      {openModalRes && <EditProfileModalRes onClose={() => setOpenModalRes(false)} />}
-      {openResetPasswordModal && <ResetPasswordModal onClose={()=> setOpenResetPasswordModal(false)}/>}
+      {openModalRes && (
+        <EditProfileModalRes onClose={() => setOpenModalRes(false)} />
+      )}
+      {openResetPasswordModal && (
+        <ResetPasswordModal onClose={() => setOpenResetPasswordModal(false)} />
+      )}
     </>
   );
 };

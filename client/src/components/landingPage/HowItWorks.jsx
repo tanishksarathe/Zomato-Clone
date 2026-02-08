@@ -1,6 +1,6 @@
 import { Store, UtensilsCrossed, Bike } from "lucide-react";
 
-export default function HowItWorks() {
+const HowItWorks = () => {
   const steps = [
     {
       icon: <Store size={28} />,
@@ -69,3 +69,6 @@ export default function HowItWorks() {
     </section>
   );
 }
+
+
+export default HowItWorks
