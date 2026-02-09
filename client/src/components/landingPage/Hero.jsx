@@ -1,7 +1,8 @@
-import { Search, ArrowRight } from "lucide-react";
+import { Search, ArrowRight, File, Settings } from "lucide-react";
 import { FaFire } from "react-icons/fa";
+import OrbitingCircles from "../animatedComponents/OrbitingCircles";
 
-const Hero = () =>{
+const Hero = () => {
   return (
     <section className="w-full min-h-[80vh] flex items-center justify-center px-6 py-16">
       <div className="max-w-7xl w-full grid md:grid-cols-2 gap-10 items-center">
@@ -18,12 +19,11 @@ const Hero = () =>{
             Delicious Food,
             <br />
             <span className="text-(--color-primary)">
-              Delivered <span className="text-(--color-text-primary)">to Your</span>
+              Delivered{" "}
+              <span className="text-(--color-text-primary)">to Your</span>
             </span>
             <br />
-            <span className="text-(--color-secondary)">
-              Doorstep
-            </span>
+            <span className="text-(--color-secondary)">Doorstep</span>
           </h1>
 
           {/* Description */}
@@ -36,10 +36,7 @@ const Hero = () =>{
           {/* Search + CTA */}
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
             <div className="flex items-center gap-2 bg-(--color-surface) border border-(--color-accent-soft) rounded-xl px-4 py-3 w-full sm:w-85 shadow-sm">
-              <Search
-                size={18}
-                className="text-(--color-text-secondary)"
-              />
+              <Search size={18} className="text-(--color-text-secondary)" />
               <input
                 type="text"
                 placeholder="Search restaurants or dishes..."
@@ -85,18 +82,13 @@ const Hero = () =>{
         {/* Right Image */}
         <div className="relative animate-float">
           <div className="bg-(--color-surface) rounded-3xl p-6 shadow-lg">
-            <img
-              src="/hero-food.png"
-              alt="Food"
-              className="w-full h-auto object-contain"
-            />
+            <OrbitingCircles/>
           </div>
         </div>
       </div>
 
       {/* Animations */}
-
     </section>
   );
-}
- export default Hero
+};
+export default Hero;
