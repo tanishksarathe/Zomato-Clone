@@ -1,5 +1,6 @@
 import Contact from "../models/contactusModel.js";
 import User from "../models/userModel.js";
+import Menu from "../models/restaurantMenu.js";
 
 export const contactUsController = async (req, res, next) => {
   try {
@@ -45,4 +46,20 @@ export const getAllRestaurants = async (req, res, next) => {
   res
     .status(200)
     .json({ message: "Restaurants Fetched Successfully", data: restaurants });
+};
+
+export const getSoloRestaurant = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    console.log("Id in getSoloRestaurat : ", id);
+
+    const restaurant = await User.findById(id).populate("menu");
+
+    console.log("Restaurant :", restaurant);
+
+    res.status(200).json({ message: "Fetched Successfully", data: restaurant });
+  } catch (error) {
+    next(error);
+  }
 };

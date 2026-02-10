@@ -13,7 +13,7 @@ const router = express.Router();
 
 const uploads = multer();
 
-router.put("/update", protect, updateRestaurant);
+router.put("/update", protect, uploads.array("restaurantImages"),updateRestaurant);
 router.patch(
   "/updateRestaurantImage",
   protect,

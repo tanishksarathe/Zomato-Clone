@@ -1,5 +1,5 @@
-import { X } from "lucide-react";
-import React, { useState } from "react";
+import { ImagePlus, X } from "lucide-react";
+import React, { useRef, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import Input from "../FormElements/Input";
 import api from "../../config/API";
@@ -14,6 +14,7 @@ const EditProfileModalRes = ({ onClose }) => {
     fullname: user.fullname,
     email: user.email,
     phone: user.phone,
+    cuisine: user.cuisine,
     owner: user?.owner || "",
     description: user?.description || "",
     timing: {
@@ -44,6 +45,16 @@ const EditProfileModalRes = ({ onClose }) => {
       account_number: user?.paymentDetails?.account_number || "",
     },
   });
+
+  const [preview, setPreview] = useState([]);
+
+  const dishes = useRef(null);
+
+  const handlePhotoChange = async (e) => {
+    const file = Array.from(e.target.files);
+
+    setPreview(file.slice(0, 5));
+  };
 
   const fetchLocation = async (e) => {
     e.preventDefault();
@@ -84,15 +95,42 @@ const EditProfileModalRes = ({ onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     setLoading(true);
 
     try {
-      console.log("Edit Restaurant Profile", details);
+      const formData = new FormData();
+      // simple fields
+      formData.append("fullname", details.fullname);
+      formData.append("email", details.email);
+      formData.append("phone", details.phone);
+      formData.append("owner", details.owner);
+      formData.append("description", details.description);
+      formData.append("role", details.role);
+      formData.append("dob", details.dob);
+      formData.append("gender", details.gender);
+      formData.append("city", details.city);
+      formData.append("cuisine", details.cuisine);
+      formData.append("address", details.address);
+      formData.append("state", details.state);
+      formData.append("pin", details.pin);
+      formData.append("restaurantName", details.restaurantName);
 
-      const response = await api.put("/restaurant/update", details);
+      // timing (nested)
+      formData.append("timing", JSON.stringify(details.timing));
 
-      console.log(response.data);
+      // geolocation (nested)
+      formData.append("geolocation", JSON.stringify(details.geolocation));
+      // documents (nested)
+      formData.append("documents", JSON.stringify(details.documents));
+
+      // payment details (nested)
+      formData.append("paymentDetails", JSON.stringify(details.paymentDetails));
+
+      preview.forEach((item) => formData.append("restaurantImages", item));
+
+      const response = await api.put("/restaurant/update", formData);
+
+      console.log(response.data.data);
 
       sessionStorage.setItem(
         "GrabMyMeal User",
@@ -308,25 +346,21 @@ const EditProfileModalRes = ({ onClose }) => {
                   <Input
                     label="Latitude"
                     value={details.geolocation.lat}
-                    name="lat"
-                    onChangeMethod={handleNestedChange}
-                    disabled={true}
+                    disabled
                   />
                   <Input
                     label="Longitude"
                     value={details.geolocation.lon}
-                    name="lon"
-                    onChangeMethod={handleNestedChange}
-                    disabled={true}
+                    disabled
                   />
                 </div>
 
                 <button
-                  className={`border px-2 py-1 rounded-lg text-sm ${details.geolocation.latitude !== "N/A" ? "border-green-500" : "border-red-600"} `}
+                  className={`border px-2 py-1 rounded-lg text-sm ${details.geolocation.lat !== "N/A" ? "border-green-500" : "border-red-600"} `}
                   onClick={fetchLocation}
                 >
-                  {details.geolocation.longitude !== "N/A" &&
-                  details.geolocation.latitude !== "N/A"
+                  {details.geolocation.lon !== "N/A" &&
+                  details.geolocation.lat !== "N/A"
                     ? "Fetched"
                     : "Get Live Location"}
                 </button>
@@ -337,7 +371,7 @@ const EditProfileModalRes = ({ onClose }) => {
                     <Input
                       label="Restaurant Name"
                       value={details.restaurantName}
-                      name="restaurant_name"
+                      name="restaurantName"
                       onChangeMethod={handleChange}
                     />
                     <Input
@@ -466,6 +500,57 @@ const EditProfileModalRes = ({ onClose }) => {
                     {/* <Input label="RC" /> */}
                     {/* <Input label="Driving License" /> */}
                   </div>
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium mb-2">
+                    Dish Images (Max 3) *
+                  </label>
+
+                  <div
+                    className="border-2 border-dashed border-[#F3C2A6]  rounded-xl p-6 bg-white"
+                    onClick={() => dishes.current.click()}
+                  >
+                    <div className="flex flex-col items-center gap-2 text-center">
+                      <ImagePlus size={36} className="text-[#8E1D4F]" />
+                      <p className="text-sm text-gray-600">
+                        Upload up to 5 images
+                      </p>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        ref={dishes}
+                        className="mt-2 text-sm"
+                        onChange={handlePhotoChange}
+                        hidden
+                      />
+                    </div>
+                  </div>
+                  {preview.length !== 0 && (
+                    <div className="grid grid-cols-5 p-2 gap-2">
+                      {preview.map((item, idx) => (
+                        <div key={idx} className="relative">
+                          <img
+                            src={URL.createObjectURL(item)}
+                            alt="images"
+                            className="h-40 rounded-md w-40 object-cover"
+                          />
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setPreview((prev) =>
+                                prev.filter((_, i) => i !== idx),
+                              )
+                            }
+                            className="absolute top-0 right-0 bg-white rounded-full m-1 cursor-pointer"
+                          >
+                            <X size={20} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* ===== SUBMIT ===== */}

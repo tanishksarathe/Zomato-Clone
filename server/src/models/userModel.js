@@ -87,6 +87,20 @@ const userSchema = mongoose.Schema(
         return this.role == "manager" ? "N/A" : null;
       },
     },
+    restaurantImages: {
+      url: {
+        type: String,
+        default() {
+          return this.role == "manager" ? "" : null;
+        },
+      },
+      publicID: {
+        type: String,
+        default() {
+          return this.role == "manager" ? "" : null;
+        },
+      },
+    },
     owner: {
       type: String,
       required() {
@@ -199,8 +213,20 @@ const userSchema = mongoose.Schema(
       default: "active",
     },
   },
-  { timestamps: true },
+  {
+    timestamps: true,
+    toJSON: { virtuals: true }, // jb data laao to virtuals ko bhi lekr aana
+    toObject: { virtuals: true },
+  },
 );
+
+// bhaisahab virtual wala tagda concept h yaha, koi fields database m save nhi hogi balki runtime pr hi generate hongi, jisme m virtually populate kr dunga (mere is model ko with jo model se mujhe data chaiye us model ko) ... And jb bhi m ab user ko call krunga controller m to vo virtual fields bhi lekr aaega....
+
+userSchema.virtual("menu", {
+  ref: "Menu", // kaha se data uthana h
+  localField: "_id", // yaha ki konsi field vaha jaakr compare kregi , kis basis pr data aaega
+  foreignField: "restaurantID", // vaha (ref : Menu) ki konsi field yaha (this : User) se gyi hui field (_id) se match hogi and result degi
+});
 
 const User = mongoose.model("User", userSchema);
 

@@ -1,5 +1,5 @@
 import cloudinary from "../config/cloudinary.js";
-import { Menu } from "../models/restaurantMenu.js";
+import Menu from "../models/restaurantMenu.js";
 import User from "../models/userModel.js";
 import { uploadImagesToCloudinary } from "../utils/imageStoreService.js";
 
@@ -28,6 +28,15 @@ export const updateRestaurant = async (req, res, next) => {
 
     const currentUser = req.user;
 
+    
+    const document = JSON.parse(req.body.documents);
+
+    const payment = JSON.parse(req.body.paymentDetails);
+
+    const location = JSON.parse(req.body.geolocation);
+
+    const times = JSON.parse(req.body.timing);
+
     if (
       !fullname ||
       !email ||
@@ -38,14 +47,14 @@ export const updateRestaurant = async (req, res, next) => {
       !dob ||
       !description ||
       !owner ||
-      !timing|| 
+      !times ||
       !address ||
-      !documents ||
-      !paymentDetails ||
-      !geolocation ||
+      !document ||
+      !payment ||
+      !location ||
       !restaurantName ||
       !pin ||
-      !cuisine||
+      !cuisine ||
       !gender
     ) {
       const error = new Error("All Fields Required");
@@ -53,43 +62,20 @@ export const updateRestaurant = async (req, res, next) => {
       return next(error);
     }
 
-    const document = {
-      uidai: documents.uidai,
-      pan: documents.pan,
-      fssai: documents.fssai,
-      gst: documents.gst,
-      rc: documents.rc || "N/A",
-      dl: documents.dl || "N/A",
-    };
-
-    const payment = {
-      upi: paymentDetails.upi.toLowerCase(),
-      ifs_Code: paymentDetails.ifs_Code,
-      account_number: paymentDetails.account_number,
-    };
-
-    const location = {
-      lat: geolocation.lat,
-      lon: geolocation.lon,
-    };
-
-    const times={
-      open: timing.open,
-      close:timing.close,
-    }
+    const images = await uploadImagesToCloudinary(req.files);
 
     const updatedUser = await User.findByIdAndUpdate(
       currentUser._id,
       {
         fullname,
-        email: email.toLowerCase(),
+        email: email?.toLowerCase(),
         phone,
         role,
         city,
         state,
         description,
         owner,
-        timing:times,
+        timing: times,
         dob,
         cuisine,
         restaurantName,
@@ -99,6 +85,7 @@ export const updateRestaurant = async (req, res, next) => {
         paymentDetails: payment,
         pin,
         geolocation: location,
+        restaurantImages: images,
       },
       { new: true },
     );

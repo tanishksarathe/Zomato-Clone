@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   MapPin,
   Share2,
@@ -6,15 +6,35 @@ import {
   CalendarDays,
   Phone,
   Star,
+  SunMedium,
 } from "lucide-react";
 import InsideOverview from "./InsideOverview";
 import InsideReview from "./InsideReview";
 import InsideMenu from "./InsideMenu";
 import InsidePhotos from "./InsidePhotos";
 import InsideBookATable from "./InsideBookATable";
+import { useParams } from "react-router-dom";
+import toast from "react-hot-toast";
+import api from "../../config/API";
 
 const RestaurantHeader = () => {
   const [toOpen, setToOpen] = useState();
+
+  const [header, setHeader] = useState();
+
+  const { id } = useParams();
+
+  const fetchDetails = async () => {
+    try {
+      const res = await api.get(`/public/restaurant-solo/${id}`);
+      setHeader(res?.data?.data);
+    } catch (error) {
+      console.log(error);
+      toast.error(
+        error?.response?.data?.message || "Error while fetching menu details..",
+      );
+    }
+  };
 
   const handleShow = (page) => {
     page = page?.toLowerCase().replace(/\s/g, "");
@@ -24,7 +44,7 @@ const RestaurantHeader = () => {
       case "reviews":
         return <InsideReview />;
       case "menu":
-        return <InsideMenu />;
+        return <InsideMenu menus={header?.menu} />;
       case "photos":
         return <InsidePhotos />;
       case "bookatable":
@@ -33,6 +53,15 @@ const RestaurantHeader = () => {
       default:
         return <InsideOverview />;
     }
+  };
+
+  useEffect(() => {
+    fetchDetails();
+  }, [id]);
+
+  const avgPrice = (header) => {
+    return (header?.menu?.reduce((sum, item) => sum + Number(item.price), 0) /
+      header?.menu?.length);
   };
 
   const restaurant = {
@@ -54,6 +83,8 @@ const RestaurantHeader = () => {
     ],
   };
 
+  console.log("Solo Response : ", header);
+
   return (
     <>
       <div className="w-full bg-(--color-background) text-(--color-text-primary)">
@@ -62,24 +93,33 @@ const RestaurantHeader = () => {
           <div className="flex flex-col md:flex-row md:justify-between gap-6">
             {/* Left Info */}
             <div>
-              <h1 className="text-3xl font-semibold">{restaurant.name}</h1>
+              <h1 className="text-3xl font-semibold">
+                {header?.restaurantName}
+              </h1>
               <p className="text-(--color-text-secondary) mt-1">
-                {restaurant.cuisines}
+                {header?.cuisine}
               </p>
               <p className="text-sm text-(--color-text-secondary)">
-                {restaurant.address}
+                {header?.address}, {header?.city}
               </p>
 
               <div className="flex items-center gap-3 mt-3 text-sm flex-wrap">
                 <span className="bg-(--color-accent-soft) text-(--color-primary) px-3 py-1 rounded-full">
-                  {restaurant.status}
+                  {new Date().getHours() <
+                    Number(header?.timing?.open.split(":")[0]) ||
+                  new Date().getHours() >
+                    Number(header?.timing?.close.split(":")[0])
+                    ? "Close"
+                    : "Open"}
                 </span>
-                <span>{restaurant.timing}</span>
+                <span>
+                  {header?.timing?.open} - {header?.timing?.close}
+                </span>
                 <span>|</span>
-                <span>{restaurant.price}</span>
+                <span>{String(avgPrice(header))}</span>
                 <span>|</span>
                 <span className="flex items-center gap-1">
-                  <Phone size={14} /> {restaurant.phone}
+                  <Phone size={14} /> {header?.phone}
                 </span>
               </div>
 
@@ -101,7 +141,8 @@ const RestaurantHeader = () => {
             </div>
 
             {/* Ratings */}
-            <div className="flex gap-6 items-start">
+
+            {/* <div className="flex gap-6 items-start">
               <div className="text-center">
                 <div className="bg-green-600 text-white px-3 py-1 rounded-md flex items-center gap-1 justify-center">
                   <Star size={14} /> {restaurant.rating}
@@ -119,7 +160,7 @@ const RestaurantHeader = () => {
                   {restaurant.deliveryReviews} Delivery Ratings
                 </p>
               </div>
-            </div>
+            </div> */}
           </div>
 
           {/* Image Gallery */}
@@ -127,24 +168,25 @@ const RestaurantHeader = () => {
             {/* Main Image */}
             <div className="md:col-span-2 h-75 overflow-hidden rounded-xl">
               <img
-                src={restaurant.images[0]}
+                src={header?.restaurantImages[0]?.url}
                 alt="Restaurant"
                 className="w-full h-full object-cover hover:scale-105 transition duration-500"
               />
             </div>
 
             {/* Side Images */}
+
             <div className="grid grid-cols-1 gap-3">
               <div className="h-36.25 overflow-hidden rounded-xl">
                 <img
-                  src={restaurant.images[1]}
+                  src={header?.restaurantImages[1]?.url}
                   alt="Food"
                   className="w-full h-full object-cover hover:scale-105 transition duration-500"
                 />
               </div>
               <div className="h-36.25 overflow-hidden rounded-xl relative">
                 <img
-                  src={restaurant.images[2]}
+                  src={header?.restaurantImages[2]?.url}
                   alt="Food"
                   className="w-full h-full object-cover"
                 />

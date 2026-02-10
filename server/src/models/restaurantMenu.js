@@ -43,9 +43,9 @@ const menuSchema = mongoose.Schema(
       required: true,
       default: true,
     },
-    preperationTime:{
-      type:String,
-      required:true
+    preperationTime: {
+      type: String,
+      required: true,
     },
     servingSize: {
       type: String,
@@ -64,4 +64,6 @@ const menuSchema = mongoose.Schema(
   },
 );
 
-export const Menu = mongoose.model("Menu", menuSchema);
+const Menu = mongoose.model("Menu", menuSchema);
+
+export default Menu;

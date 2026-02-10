@@ -237,7 +237,9 @@ const RestaurantProfile = () => {
               <InfoRow
                 icon={UtensilsCrossed}
                 label="Cuisine"
-                value={user?.cuisine.split(",").map((l)=> (<span>{l}</span>) )}
+                value={user?.cuisine.split(",").map((l) => (
+                  <span>{l}</span>
+                ))}
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -358,6 +360,25 @@ const RestaurantProfile = () => {
                 label="Account Number"
                 value={user?.paymentDetails?.account_number}
               />
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <h3
+              className="text-sm font-semibold"
+              style={{ color: "var(--color-text-primary)" }}
+            >
+              Restaurant Ambiance
+            </h3>
+            <div className="grid grid-cols-5">
+              {user?.restaurantImages?.map((item, idx) => (
+                <img
+                  key={idx}
+                  src={item?.url}
+                  alt={user?.restaurantName}
+                  className="h-30 w-40 rounded-2xl object-cover"
+                />
+              ))}
             </div>
           </div>
         </div>

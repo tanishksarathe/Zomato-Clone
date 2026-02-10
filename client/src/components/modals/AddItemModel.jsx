@@ -21,6 +21,12 @@ const AddItemModel = ({ onClose }) => {
 
   const dishes = useRef(null);
 
+  const handlePhotoChange = async (e) => {
+    const file = Array.from(e.target.files);
+
+    setPreview(file.slice(0, 5));
+  };
+
   const handleChange = (e) => {
     const { type, name, value, checked } = e.target;
 
@@ -30,11 +36,6 @@ const AddItemModel = ({ onClose }) => {
     }));
   };
 
-  const handlePhotoChange = async (e) => {
-    const file = Array.from(e.target.files);
-
-    setPreview(file.slice(0, 5));
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();

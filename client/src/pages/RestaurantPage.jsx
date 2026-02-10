@@ -207,7 +207,7 @@ const RestaurantPage = () => {
 
               {/* CTA */}
               <button
-              onClick={()=> navigate('/restaurant-header')}
+              onClick={()=> navigate(`/restaurant-header/${rest._id}`)}
                 className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold shadow-md transition hover:scale-105"
                 style={{
                   backgroundColor: "var(--color-primary)",
