@@ -12,6 +12,8 @@ import AdminDashboard from "./pages/Dashboards/AdminDashboard";
 import RiderDashboard from "./pages/Dashboards/RiderDashboard";
 import RestaurantPage from "./pages/RestaurantPage";
 import RestaurantHeader from "./components/restaurantPageInsiders/RestaurantHeader";
+import AddToCartPage from "./components/userDashboard/AddToCartPage";
+import ErrorComponent from "./components/ErrorComponent";
 
 function App() {
   return (
@@ -31,7 +33,9 @@ function App() {
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
           <Route path="/restaurant-dashboard" element={<RestaurantDashboard />} />
           <Route path="/restaurants-all" element={<RestaurantPage />} />
+          <Route path="/add-to-cart" element={<AddToCartPage />} />
           <Route path="/restaurant-header/:id" element={<RestaurantHeader />} />
+          <Route path="*" element={<ErrorComponent />} />
         </Routes>
       </BrowserRouter>
     </>

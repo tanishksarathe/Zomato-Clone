@@ -9,8 +9,9 @@ import UserHelpdesk from "../../components/userDashboard/UserHelpdesk";
 import { Ban, Menu } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import AddToCartPage from "../../components/userDashboard/AddToCartPage";
 
-const UserDashboard = () => {
+const UserDashboard = ({cart}) => {
  
   const [active, setActive] = useState("overview");
   const [collapsed, setCollapsed] = useState(true);
@@ -47,7 +48,7 @@ const UserDashboard = () => {
           {active === "order" && <UserOrder />}
           {active === "transaction" && <UserTransactions />}
           {active === "help" && <UserHelpdesk />}
-        </div>
+          </div>
       </div>
     </>
   );

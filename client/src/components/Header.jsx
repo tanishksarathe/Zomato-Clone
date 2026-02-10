@@ -27,6 +27,7 @@ const Header = () => {
         break;
 
       default:
+        navigate("/");
         break;
     }
   };
@@ -49,7 +50,10 @@ const Header = () => {
       <div className="bg-(--color-surface) flex justify-between items-center px-4 py-2">
         <div>
           <Link to={"/"} className="flex gap-2 justify-center items-center">
-            <img src={logo} alt="logo" className="h-15 w-15 rounded-full" /> <span className="font-bold text-2xl text-(--color-text-primary) hover:text-(--color-primary-hover)">GrabMyMeal</span>
+            <img src={logo} alt="logo" className="h-15 w-15 rounded-full" />{" "}
+            <span className="font-bold text-2xl text-(--color-text-primary) hover:text-(--color-primary-hover)">
+              GrabMyMeal
+            </span>
           </Link>
         </div>
         <div className="flex justify-around gap-4 font-semibold">
@@ -76,6 +80,12 @@ const Header = () => {
             className="text-decoration-none text-(--color-primary) hover:text-(--color-primary-hover)"
           >
             Restaurants
+          </Link>
+          <Link
+            to={"/add-to-cart"}
+            className="text-decoration-none text-(--color-primary) hover:text-(--color-primary-hover)"
+          >
+            Cart
           </Link>
         </div>
         <div className="flex gap-4">

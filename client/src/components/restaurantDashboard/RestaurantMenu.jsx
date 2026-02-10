@@ -135,7 +135,7 @@ const RestaurantMenu = () => {
                         <td className="p-3 font-medium">{item.dishName}</td>
                         <td className="p-3">{item.cuisine}</td>
                         <td
-                          className={`p-3 font-semibold ${
+                          className={`p-3 font-semibold capitalize ${
                             item.type === "veg"
                               ? "text-green-700"
                               : item.type === "vegan"
@@ -155,25 +155,7 @@ const RestaurantMenu = () => {
                                             : "text-rose-600"
                           }`}
                         >
-                          {item.type === "veg"
-                            ? "Veg"
-                            : item.type === "vegan"
-                              ? "Vegan"
-                              : item.type === "nonveg"
-                                ? "Non Veg"
-                                : item.type === "egg"
-                                  ? "Egg"
-                                  : item.type === "spicy"
-                                    ? "Spicy"
-                                    : item.type === "gluten-free"
-                                      ? "Gluten Free"
-                                      : item.type === "jain"
-                                        ? "Jain"
-                                        : item.type === "contains-nuts"
-                                          ? "Contains Nuts"
-                                          : item.type === "sweet"
-                                            ? "Sweet"
-                                            : ""}
+                          {item.type}
                         </td>
                         <td className="p-3">₹{item.price}</td>
                         <td className="p-3 flex justify-center items-center">
