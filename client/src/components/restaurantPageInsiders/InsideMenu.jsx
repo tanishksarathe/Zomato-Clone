@@ -138,14 +138,14 @@ const InsideMenu = ({ menus }) => {
                 type="button"
                 onClick={() => handleAddToCart(menu)}
                 disabled={!menu.availability}
-                className={`px-4 py-1.5 rounded-lg font-semibold text-white
+                className={`px-4 py-1.5 rounded-lg capitalize font-semibold text-white
               ${
                 menu.availability
                   ? "bg-red-500 hover:bg-red-600"
                   : "bg-gray-400 cursor-not-allowed"
               }`}
               >
-                Add
+                Add to cart
               </button>
             </div>
           </div>

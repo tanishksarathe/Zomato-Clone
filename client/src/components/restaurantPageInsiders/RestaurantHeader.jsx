@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   MapPin,
   Share2,
@@ -13,14 +13,16 @@ import InsideReview from "./InsideReview";
 import InsideMenu from "./InsideMenu";
 import InsidePhotos from "./InsidePhotos";
 import InsideBookATable from "./InsideBookATable";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import api from "../../config/API";
 
 const RestaurantHeader = () => {
-  const [toOpen, setToOpen] = useState();
+  const [toOpen, setToOpen] = useState("overview");
 
   const [header, setHeader] = useState();
+
+  const navigate = useNavigate();
 
   const { id } = useParams();
 
@@ -40,18 +42,18 @@ const RestaurantHeader = () => {
     page = page?.toLowerCase().replace(/\s/g, "");
     switch (page) {
       case "overview":
-        return <InsideOverview />;
+        return <InsideOverview header={header}/>;
       case "reviews":
         return <InsideReview />;
       case "menu":
         return <InsideMenu menus={header?.menu} />;
       case "photos":
-        return <InsidePhotos />;
+        return <InsidePhotos header={header}/>;
       case "bookatable":
         return <InsideBookATable />;
 
       default:
-        return <InsideOverview />;
+        return <InsideOverview header={header} />;
     }
   };
 
@@ -60,34 +62,17 @@ const RestaurantHeader = () => {
   }, [id]);
 
   const avgPrice = (header) => {
-    return (header?.menu?.reduce((sum, item) => sum + Number(item.price), 0) /
-      header?.menu?.length);
+    return (
+      header?.menu?.reduce((sum, item) => sum + Number(item.price), 0) /
+      header?.menu?.length
+    );
   };
 
-  const restaurant = {
-    name: "BlinQ - Premium Sky Cafe",
-    cuisines: "Chinese, Continental, North Indian",
-    address: "17, E-2, Arera Colony, Bhopal",
-    status: "Open now",
-    timing: "3pm – 11:45pm (Today)",
-    price: "₹1,000 for two",
-    phone: "+91 9009019143",
-    rating: 4.2,
-    diningReviews: 204,
-    deliveryReviews: 0,
-    images: [
-      "https://images.unsplash.com/photo-1555396273-367ea4eb4db5",
-      "https://images.unsplash.com/photo-1600891964599-f61ba0e24092",
-      "https://images.unsplash.com/photo-1552566626-52f8b828add9",
-      "https://images.unsplash.com/photo-1546069901-ba9599a7e63c",
-    ],
-  };
-
-  console.log("Solo Response : ", header);
+  console.log("Header is here : ",header)
 
   return (
     <>
-      <div className="w-full bg-(--color-background) text-(--color-text-primary)">
+      <div className="w-full h-350 bg-(--color-background) text-(--color-text-primary)">
         {/* Top Section */}
         <div className="max-w-6xl mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row md:justify-between gap-6">
@@ -125,16 +110,29 @@ const RestaurantHeader = () => {
 
               {/* Action Buttons */}
               <div className="flex gap-3 mt-4 flex-wrap">
-                <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-(--color-surface) hover:bg-(--color-accent-soft) transition">
+                <a
+                href={`https://www.google.com/maps/dir/?api=1&destination=${header?.geolocation?.lat},${header?.geolocation?.lon}`}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-(--color-surface) hover:bg-(--color-accent-soft) transition"
+                target="_blank"
+                >
                   <MapPin size={16} /> Direction
-                </button>
-                <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-(--color-surface) hover:bg-(--color-accent-soft) transition">
+                </a>
+                <button
+                  type="button"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-(--color-surface) hover:bg-(--color-accent-soft) transition"
+                >
                   <Share2 size={16} /> Share
                 </button>
-                <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-(--color-surface) hover:bg-(--color-accent-soft) transition">
+                <button
+                  type="button"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-(--color-surface) hover:bg-(--color-accent-soft) transition"
+                >
                   <MessageSquare size={16} /> Reviews
                 </button>
-                <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-(--color-primary) text-white hover:bg-(--color-primary-hover) transition">
+                <button
+                  type="button"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-(--color-primary) text-white hover:bg-(--color-primary-hover) transition"
+                >
                   <CalendarDays size={16} /> Book a table
                 </button>
               </div>
@@ -184,7 +182,7 @@ const RestaurantHeader = () => {
                   className="w-full h-full object-cover hover:scale-105 transition duration-500"
                 />
               </div>
-              <div className="h-36.25 overflow-hidden rounded-xl relative">
+              <div className="h-36.25 overflow-hidden rounded-xl relative" onClick={() => setToOpen("photos")}>
                 <img
                   src={header?.restaurantImages[2]?.url}
                   alt="Food"

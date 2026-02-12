@@ -4,7 +4,7 @@ import OrbitingCircles from "../animatedComponents/OrbitingCircles";
 
 const Hero = () => {
   return (
-    <section className="w-full min-h-[80vh] flex items-center justify-center px-6 py-16">
+    <section className="w-full min-h-[80vh] flex items-center justify-center px-6 py-16 z-20 backdrop-brightness-70">
       <div className="max-w-7xl w-full grid md:grid-cols-2 gap-10 items-center">
         {/* Left Content */}
         <div className="space-y-6 animate-fadeInUp">
@@ -15,19 +15,19 @@ const Hero = () => {
           </div>
 
           {/* Heading */}
-          <h1 className="text-4xl md:text-6xl font-extrabold leading-tight text-(--color-text-primary)">
+          <h1 className="text-4xl md:text-6xl font-extrabold leading-tight text-(--color-background)">
             Delicious Food,
             <br />
             <span className="text-(--color-primary)">
               Delivered{" "}
-              <span className="text-(--color-text-primary)">to Your</span>
+              <span className="text-(--color-background)">to Your</span>
             </span>
             <br />
             <span className="text-(--color-secondary)">Doorstep</span>
           </h1>
 
           {/* Description */}
-          <p className="text-(--color-text-secondary) text-lg max-w-lg">
+          <p className="text-(--color-background) text-lg max-w-lg">
             Explore hundreds of restaurants, order your favorite meals, and
             enjoy fast delivery with real-time tracking. Your next meal is just
             a tap away.
@@ -51,28 +51,28 @@ const Hero = () => {
           </div>
 
           {/* Stats */}
-          <div className="flex gap-10 pt-4">
+          <div className="flex gap-10 pt-4 text-(--color-background)">
             <div>
-              <p className="text-2xl font-bold text-(--color-text-primary)">
+              <p className="text-2xl font-bold">
                 500+
               </p>
-              <p className="text-sm text-(--color-text-secondary)">
+              <p className="text-sm">
                 Restaurants
               </p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-(--color-text-primary)">
+              <p className="text-2xl font-bold ">
                 50K+
               </p>
-              <p className="text-sm text-(--color-text-secondary)">
+              <p className="text-sm ">
                 Happy Users
               </p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-(--color-text-primary)">
+              <p className="text-2xl font-bold">
                 4.9
               </p>
-              <p className="text-sm text-(--color-text-secondary)">
+              <p className="text-sm">
                 App Rating
               </p>
             </div>
@@ -81,9 +81,9 @@ const Hero = () => {
 
         {/* Right Image */}
         <div className="relative animate-float">
-          <div className="bg-(--color-surface) rounded-3xl p-6 shadow-lg">
+          {/* <div className="bg-(--color-surface) rounded-3xl p-6 shadow-lg">
             <OrbitingCircles/>
-          </div>
+          </div> */}
         </div>
       </div>
 

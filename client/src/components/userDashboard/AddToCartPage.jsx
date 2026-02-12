@@ -167,8 +167,12 @@ const AddToCartPage = () => {
           </div>
           <section className="bg-(--color-surface) flex justify-between items-center p-5 rounded-full px-10 my-5 border-t hover:shadow-2xs">
             <div>
-              <p className="text-xl font-semibold text-(--color-text-primary)">Total Amount</p>
-              <p className="text-xl font-semibold text-(--color-primary)">₹{totalAmount()}</p>
+              <p className="text-xl font-semibold text-(--color-text-primary)">
+                Total Amount
+              </p>
+              <p className="text-xl font-semibold text-(--color-primary)">
+                ₹{totalAmount()}
+              </p>
             </div>
 
             <button

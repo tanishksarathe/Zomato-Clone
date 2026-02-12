@@ -46,7 +46,7 @@ const Header = () => {
   };
 
   return (
-    <div className="sticky top-0 z-10">
+    <div className="sticky top-0 z-50">
       <div className="bg-(--color-surface) flex justify-between items-center px-4 py-2">
         <div>
           <Link to={"/"} className="flex gap-2 justify-center items-center">
