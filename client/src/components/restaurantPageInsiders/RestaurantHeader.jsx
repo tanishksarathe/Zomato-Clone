@@ -72,7 +72,7 @@ const RestaurantHeader = () => {
 
   return (
     <>
-      <div className="w-full h-350 bg-(--color-background) text-(--color-text-primary)">
+      <div className="w-full h-450 bg-(--color-background) text-(--color-text-primary)">
         {/* Top Section */}
         <div className="max-w-6xl mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row md:justify-between gap-6">
