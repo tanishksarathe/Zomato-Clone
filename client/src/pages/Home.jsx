@@ -7,12 +7,12 @@ import HowItWorks from "../components/LandingPage/HowItWorks";
 import Riders from "../components/landingPage/Riders";
 import CallToAction from "../components/landingPage/CallToAction";
 import Footer from "../components/landingPage/Footer";
-import adv from "../../public/videos/Firefly Cinematic montage with fluid transitions. Start with a close-up of steam rising from a gourm.mp4";
+import adv from "/public/videos/Firefly Cinematic montage with fluid transitions. Start with a close-up of steam rising from a gourm.mp4?url";
 
 const Home = () => {
   return (
     <>
-      <div className="h-full bg-(--color-background)">
+      <div className="h-full bg-(--color-background) scroll-smooth">
         {/* <video loop controls autoPlay muted className="h-[138vh] inset-0 w-full object-fill absolute">
           <source src={adv} type="video/mp4"/>
         </video> */}

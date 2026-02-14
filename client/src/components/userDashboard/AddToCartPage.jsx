@@ -1,50 +1,120 @@
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import api from "../../config/API";
+import { useCart } from "../../context/cartContext";
 
 const AddToCartPage = () => {
   const [cartItems, setCartItems] = useState([]);
 
-  console.log("Cart Items : ", cartItems);
+  const [cart, setCart] = useState();
+
+  const { setBadge } = useCart();
+
+  const fetchCartItems = async (list, localCart) => {
+    try {
+      const res = await api.get(`/public/cart-items/${list}`);
+
+      // here we need to merge our state with the local storage because we have quanity in that storage only so that's why
+
+      // jo data upr se aa rha h usme map lgao
+
+      // double loop concept // time complexity i suppose O(n^2)
+
+      // const mergedCart = res?.data?.data.map((item) => {
+      //   const localItem = localCart.find((i) => {
+      //     i.menuItem === item._id;
+      //   });
+
+      //   return {
+      //     ...item,
+      //     quantity: localItem?.quantity || 1,
+      //   };
+      // });
+
+      // map approach, yaha m local storage m id and quanity ko map kr dunga than O(n) time complexity se cheezo ko handle krunga
+
+      const localQuantity = {}; // map ready
+
+      localCart.forEach((item) => {
+        localQuantity[item.menuItem] = item.quantity; // map filling
+      });
+
+      // now merge
+
+      const mergedCart = res?.data?.data.map((item) => {
+        return {
+          ...item,
+          quantity: localQuantity[item._id] || 1,
+        };
+      });
+
+      setCart(mergedCart);
+
+      setBadge(mergedCart.length);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const onRemove = (itemid) => {
     setCartItems((prev) => {
-      const updtaed = prev.filter((i) => i._id !== itemid);
+      const updtaed = prev.filter((i) => i.menuItem !== itemid);
       localStorage.setItem("AddToCart", JSON.stringify(updtaed));
       return updtaed;
     });
+
+    setCart((prev) => prev.filter((i) => i._id !== itemid));
   };
 
-  const onDecrease = (item) => {
+  const onDecrease = (itemid) => {
     const updateCart = cartItems.map((i) =>
-      i._id === item._id ? { ...i, quantity: i.quantity - 1 } : i,
+      i.menuItem === itemid && i.quantity >= 1
+        ? { ...i, quantity: i.quantity - 1 }
+        : i,
     );
     setCartItems(updateCart);
     localStorage.setItem("AddToCart", JSON.stringify(updateCart));
+
+    setCart((prev) =>
+      prev.map((i) =>
+        i._id === itemid ? { ...i, quantity: i.quantity - 1 } : i,
+      ),
+    );
   };
 
-  const onIncrease = (item) => {
+  const onIncrease = (itemid) => {
     const updateCart = cartItems.map((i) =>
-      i._id === item._id ? { ...i, quantity: i.quantity + 1 } : i,
+      i.menuItem === itemid ? { ...i, quantity: i.quantity + 1 } : i,
     );
     setCartItems(updateCart);
     localStorage.setItem("AddToCart", JSON.stringify(updateCart));
+
+    setCart((prev) =>
+      prev.map((i) =>
+        i._id === itemid ? { ...i, quantity: i.quantity + 1 } : i,
+      ),
+    );
   };
 
   useEffect(() => {
     const parsedLocalStorageData =
       JSON.parse(localStorage.getItem("AddToCart")) || [];
     setCartItems(parsedLocalStorageData);
+
+    const list = parsedLocalStorageData?.map((item) => item?.menuItem);
+
+    fetchCartItems(list, parsedLocalStorageData);
   }, []);
 
   function totalAmount() {
     let total = 0;
-    cartItems.forEach(
-      (item) => (total = total + Number(item.price) * Number(item.quantity)),
+    cart?.forEach(
+      (item) => (total += Number(item.price) * Number(item.quantity)),
     );
     return total;
   }
 
-  console.log(totalAmount());
+  console.log(cart);
 
   return (
     <>
@@ -57,7 +127,7 @@ const AddToCartPage = () => {
           </h1>
 
           {/* Empty state */}
-          {cartItems.length === 0 && (
+          {cart?.length === 0 && (
             <div
               className="text-center py-20 rounded-xl shadow-sm"
               style={{ backgroundColor: "var(--color-surface)" }}
@@ -73,7 +143,7 @@ const AddToCartPage = () => {
 
           {/* Cart items list */}
           <div className="space-y-4">
-            {cartItems.map((item, idx) => (
+            {cart?.map((item, idx) => (
               <div
                 key={idx}
                 className="flex items-center gap-4 p-4 rounded-xl shadow-sm transition hover:shadow-md"
@@ -126,7 +196,7 @@ const AddToCartPage = () => {
                   {/* Quantity controls */}
                   <div className="flex items-center gap-2 border rounded-lg px-2 py-1">
                     <button
-                      onClick={() => onDecrease(item)}
+                      onClick={() => onDecrease(item._id)}
                       className="w-7 h-7 rounded-md text-lg font-bold"
                       style={{
                         backgroundColor: "var(--color-accent-soft)",
@@ -145,7 +215,7 @@ const AddToCartPage = () => {
                     </span>
 
                     <button
-                      onClick={() => onIncrease(item)}
+                      onClick={() => onIncrease(item._id)}
                       className="w-7 h-7 rounded-md text-lg font-bold text-white"
                       style={{ backgroundColor: "var(--color-primary)" }}
                     >
@@ -165,7 +235,7 @@ const AddToCartPage = () => {
               </div>
             ))}
           </div>
-          <section className="bg-(--color-surface) flex justify-between items-center p-5 rounded-full px-10 my-5 border-t hover:shadow-2xs">
+          <section className="bg-(--color-surface) flex justify-between items-center p-5 px-10 my-5 border-t hover:shadow-2xs">
             <div>
               <p className="text-xl font-semibold text-(--color-text-primary)">
                 Total Amount

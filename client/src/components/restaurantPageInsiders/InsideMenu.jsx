@@ -1,13 +1,21 @@
 import { SearchIcon } from "lucide-react";
 import toast from "react-hot-toast";
 import "./restaurantPage.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import api from "../../config/API";
 
-const InsideMenu = ({ menus }) => {
+const InsideMenu = ({ header }) => {
   const [searchBy, setSearchBy] = useState({
-    pivot: "",
+    pivotcuisine: "",
+    pivottype: "",
     priceRange: "",
   });
+
+  const [naam, setNaam] = useState("");
+
+  const [minMax, setMinMax] = useState([]);
+
+  const [menus, setMenus] = useState(header?.menu);
 
   const handleAddToCart = (menuItem) => {
     try {
@@ -18,21 +26,21 @@ const InsideMenu = ({ menus }) => {
       // ab dekho kya item phle se h cart m
 
       const existingItem = existingCart.find(
-        (item) => item._id === menuItem._id,
+        (item) => item.menuItem === menuItem,
       );
 
       // agr existing item h to uski quantity bdha kr save kro if not than direct new item ki entry save krvao
 
       if (existingItem) {
         const updateCart = existingCart.map((item) =>
-          item._id === menuItem._id
+          item.menuItem === menuItem
             ? { ...item, quantity: item.quantity + 1 }
             : item,
         );
         localStorage.setItem("AddToCart", JSON.stringify(updateCart));
         toast.success("Added to Cart");
       } else {
-        const updateCart = [...existingCart, { ...menuItem, quantity: 1 }];
+        const updateCart = [...existingCart, { menuItem, quantity: 1 }];
         localStorage.setItem("AddToCart", JSON.stringify(updateCart));
         toast.success("Added to Cart");
       }
@@ -40,6 +48,44 @@ const InsideMenu = ({ menus }) => {
       toast.error(error);
     }
   };
+
+  const fetchFilteredData = async () => {
+
+    try {
+      const res = await api.get("/public/get-filtered", {
+        params: {
+          id: header?._id,
+          pivotc: searchBy.pivotcuisine,
+          pivott: searchBy.pivottype,
+          priran: searchBy.priceRange,
+          naam:naam,
+        },
+      });
+      setMenus(res?.data?.data);
+      console.log("FilteredData : ", res?.data?.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const minMaxPrice = () => {
+    const min = header?.menu?.map((dish) => Number(dish?.price));
+    setMinMax(min);
+    return min;
+  };
+
+  useEffect(() => {
+    if (header?.menu) {
+      setMenus(header.menu);
+      minMaxPrice();
+    }
+  }, [header]);
+
+  useEffect(() => {
+    if (header?._id) {
+      fetchFilteredData();
+    }
+  }, [searchBy, naam]);
 
   return (
     <>
@@ -53,16 +99,17 @@ const InsideMenu = ({ menus }) => {
             <div className="flex flex-wrap gap-2 items-center">
               <div className="flex flex-wrap gap-2 pl-3 items-center capitalize">
                 {[
-                  "north-indian",
-                  "south-indian",
+                  "North Indian",
+                  "South Indian",
                   "italian",
-                  "chinese",
-                  "dessert",
+                  "Chinese",
+                  "Dessert",
+                  "Mughlai",
                 ].map((item, idx) => (
                   <button
                     type="button"
                     onClick={() =>
-                      setSearchBy((prev) => ({ ...prev, pivot: item }))
+                      setSearchBy((prev) => ({ ...prev, pivotcuisine: item }))
                     }
                     key={idx}
                     className="text-(--color-background) bg-(--color-primary) border p-1 px-2 rounded-lg font-normal"
@@ -75,14 +122,21 @@ const InsideMenu = ({ menus }) => {
 
             <div className="text-lg font-semibold">Categories</div>
             <div className="flex flex-wrap gap-2 pl-3 items-center capitalize">
-              {["veg", "non-veg", "vegan", "gluten-free"].map((item, idx) => (
+              {[
+                "veg",
+                "nonveg",
+                "spicy",
+                "vegan",
+                "gluten-free",
+                "contains-nuts",
+              ].map((item, idx) => (
                 <button
                   type="button"
                   onClick={() =>
-                    setSearchBy((prev) => ({ ...prev, pivot: item }))
+                    setSearchBy((prev) => ({ ...prev, pivottype: item }))
                   }
                   key={idx}
-                  className="text-(--color-background) bg-(--color-primary) border p-1 px-2 rounded-lg font-normal"
+                  className="text-(--color-background) bg-(--color-primary) border p-1 px-2 rounded-lg font-normal capitalize"
                 >
                   {item}
                 </button>
@@ -91,21 +145,24 @@ const InsideMenu = ({ menus }) => {
             {/* {searchBy.pivot} */}
             <div className="text-lg font-semibold">Price</div>
             <div className="flex gap-2 pl-3 items-center">
-              <span>max</span>
+              <span>{minMax.length ? Math.min(...minMax) : 0}</span>
               <input
                 type="range"
                 className="custom-range mr-5"
-                min={0}
-                max={100}
+                min={minMax.length ? Math.min(...minMax) : 0}
+                max={minMax.length ? Math.max(...minMax) : 1000}
                 value={searchBy.priceRange}
                 onChange={(e) =>
-                  setSearchBy((prev) => ({ ...prev, priceRange: e.target.value }))
+                  setSearchBy((prev) => ({
+                    ...prev,
+                    priceRange: e.target.value,
+                  }))
                 }
               />
 
               {/* {searchBy.priceRange} */}
 
-              <span>min</span>
+              <span>{minMax.length ? Math.max(...minMax) : 1000}</span>
             </div>
           </div>
         </div>
@@ -116,6 +173,12 @@ const InsideMenu = ({ menus }) => {
               type="search"
               className="rounded-3xl bg-white p-2 w-full"
               placeholder="Find Your Dish"
+              value={searchBy.naam}
+              onChange={(e) =>
+                setTimeout(() => {
+                  setNaam((prev) => ({ ...prev, naam: e.target.value }));
+                }, 3000)
+              }
             />
             <div className="bg-white rounded-full p-2">
               <SearchIcon />
@@ -189,8 +252,12 @@ const InsideMenu = ({ menus }) => {
               <div className="mt-3">
                 {/* Name + veg indicator */}
                 <div className="flex items-center justify-between gap-2">
-                  <h3 className="text-lg font-semibold">{menu.dishName}</h3>
-
+                  <div className="flex flex-col gap-2">
+                    <h3 className="text-lg font-semibold">{menu?.dishName}</h3>
+                    <h6 className="text-sm font-normal bg-(--color-secondary) py-0.2 px-2 rounded-2xl text-(--color-background) w-fit">
+                      {menu?.cuisine}
+                    </h6>
+                  </div>
                   {/* Right: Image */}
                   <img
                     src={menu?.image[0].url}
@@ -199,7 +266,9 @@ const InsideMenu = ({ menus }) => {
                   />
                 </div>
 
-                <p className="text-sm text-gray-500 mt-1">{menu.description}</p>
+                <p className="text-sm text-gray-500 mt-1">
+                  {menu?.description.slice(0, 100)}.....
+                </p>
 
                 <p className="text-sm text-gray-600 mt-2">
                   Serving: {menu.servingSize}
@@ -219,7 +288,7 @@ const InsideMenu = ({ menus }) => {
                 <span className="text-lg font-bold">₹{menu.price}</span>
                 <button
                   type="button"
-                  onClick={() => handleAddToCart(menu)}
+                  onClick={() => handleAddToCart(menu._id)}
                   disabled={!menu.availability}
                   className={`px-4 py-1.5 rounded-lg capitalize font-semibold text-white
               ${

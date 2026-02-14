@@ -63,3 +63,64 @@ export const getSoloRestaurant = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getFilteredMenu = async (req, res, next) => {
+  try {
+    const { id, pivotc, pivott, priran, naam } = req.query;
+
+    const query = {
+      restaurantID: id,
+    };
+
+    // if naam is there
+
+    if (naam && naam !== undefined) {
+      query.dishName = naam;
+    }
+
+    // if cuisine is there
+
+    if (pivotc && pivotc !== null && pivotc !== undefined) {
+      query.cuisine = pivotc;
+    }
+
+    // if price range is there
+
+    if (priran && !isNaN(priran)) {
+      query.price = { $lte: Number(priran) };
+    }
+
+    // if type is there
+
+    if (pivott && pivott !== null && pivott !== undefined) {
+      query.type = pivott;
+    }
+
+    const restaurant = await Menu.find(query);
+
+    console.log("Restaurant :", restaurant);
+
+    res.status(200).json({ message: "Fetched Successfully", data: restaurant });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const cartItemsList = async (req, res, next) => {
+  try {
+    const { list } = req.params;
+
+    if (!list || list.length === 0) {
+      res.status(404).json({ message: "Items not found" });
+      return;
+    }
+
+    const idArray = list.split(",") // because params m string aaegi, array ki comma separated values ke saath...
+
+    const cartItems = await Menu.find({ _id: { $in: idArray } });
+
+    res.status(200).json({ message: "Cart Updates", data:cartItems });
+  } catch (error) {
+    next(error);
+  }
+};

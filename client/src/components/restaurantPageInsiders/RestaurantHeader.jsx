@@ -46,7 +46,7 @@ const RestaurantHeader = () => {
       case "reviews":
         return <InsideReview />;
       case "menu":
-        return <InsideMenu menus={header?.menu} />;
+        return <InsideMenu header={header} />;
       case "photos":
         return <InsidePhotos header={header}/>;
       case "bookatable":
@@ -68,7 +68,7 @@ const RestaurantHeader = () => {
     );
   };
 
-  console.log("Header is here : ",header)
+  // console.log("Header is here : ",header)
 
   return (
     <>

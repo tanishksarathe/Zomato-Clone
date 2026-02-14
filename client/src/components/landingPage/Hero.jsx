@@ -4,7 +4,7 @@ import OrbitingCircles from "../animatedComponents/OrbitingCircles";
 
 const Hero = () => {
   return (
-    <section className="w-full min-h-[80vh] flex items-center justify-center px-6 py-16 z-20 backdrop-brightness-70">
+    <section className="w-full min-h-[80vh] flex items-center justify-center px-6 py-16 z-20 backdrop-brightness-50">
       <div className="max-w-7xl w-full grid md:grid-cols-2 gap-10 items-center">
         {/* Left Content */}
         <div className="space-y-6 animate-fadeInUp">

@@ -28,7 +28,7 @@ const DUMMY_RESTAURANTS = [
 
 const InsideOverview = ({ header }) => {
   
-  console.log("", header);
+  // console.log("", header);
   
   return (
     <>
