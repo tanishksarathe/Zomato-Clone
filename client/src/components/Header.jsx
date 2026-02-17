@@ -116,7 +116,7 @@ const Header = () => {
             <div className="flex justify-center gap-5 items-center">
               <div
                 onClick={handleNavigate}
-                className="text-(--color-surface) hover:text-(--color-primary-hover) cursor-pointer"
+                className={`${isHome ? "text-(--color-surface)":"text-(--color-primary)"} hover:text-(--color-primary-hover) cursor-pointer`}
               >
                 {user.fullname}
               </div>
@@ -131,7 +131,7 @@ const Header = () => {
             <>
               <button
                 onClick={() => navigate("/login")}
-                className="font-semibold text-(--color-surface) px-4 rounded-lg py-2"
+                className={`${isHome ? "text-(--color-surface)":"text-(--color-primary)"} font-semibold px-4 rounded-lg py-2`}
               >
                 Login
               </button>

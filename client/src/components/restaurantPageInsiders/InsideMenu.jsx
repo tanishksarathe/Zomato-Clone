@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import "./restaurantPage.css";
 import { useEffect, useState } from "react";
 import api from "../../config/API";
+import { useCart } from "../../context/cartContext";
 
 const InsideMenu = ({ header }) => {
   const [searchBy, setSearchBy] = useState({
@@ -11,24 +12,71 @@ const InsideMenu = ({ header }) => {
     priceRange: "",
   });
 
+  const { badge } = useCart();
+
   const [naam, setNaam] = useState("");
 
   const [minMax, setMinMax] = useState([]);
 
   const [menus, setMenus] = useState(header?.menu);
 
-  const handleAddToCart = (menuItem) => {
+  const handleAddToCart = (menuid, resid) => {
     try {
       // sabse pehle to jo existing cart h use lekr aao ya new define kr do
 
-      const existingCart = JSON.parse(localStorage.getItem("AddToCart")) || [];
+      let existingCart = JSON.parse(localStorage.getItem("AddToCart")) || [];
 
-      // ab dekho kya item phle se h cart m
+      // ab dekho kya restaurant phle se h cart m
 
-      const existingItem = existingCart.find(
-        (item) => item.menuItem === menuItem,
-      );
+      const existingRes = existingCart.find((item) => item.resid === resid); // returns the complete object with resid
 
+      if (existingRes) {
+        // if restaurant found then find the item now
+
+        const mainItem = existingRes.existingItem.find(
+          (i) => i.menuid === menuid,
+        );
+
+        //  if item found then increase the item quantity
+
+        if (mainItem) {
+          existingRes.existingItem = existingRes.existingItem.map((i) =>
+            i.menuid === menuid
+              ? {
+                  ...i,
+                  quantity: i.quantity + 1,
+                }
+              : i,
+          );
+
+          //  else add the item
+        } else {
+          existingRes.existingItem = [
+            ...existingRes.existingItem,
+            {
+              menuid,
+              quantity: 1,
+            },
+          ];
+        }
+      } else {
+        //  is restaurant is not found than make the restaurant field first and than add the menuitem array, add menu item, add quantity...
+
+        existingCart = [
+          ...existingCart,
+          {
+            resid,
+            existingItem: [
+              {
+                menuid,
+                quantity: 1,
+              },
+            ],
+          },
+        ];
+      }
+
+      /*
       // agr existing item h to uski quantity bdha kr save kro if not than direct new item ki entry save krvao
 
       if (existingItem) {
@@ -44,13 +92,16 @@ const InsideMenu = ({ header }) => {
         localStorage.setItem("AddToCart", JSON.stringify(updateCart));
         toast.success("Added to Cart");
       }
+
+      */
+
+      localStorage.setItem("AddToCart", JSON.stringify(existingCart));
     } catch (error) {
       toast.error(error);
     }
   };
 
   const fetchFilteredData = async () => {
-
     try {
       const res = await api.get("/public/get-filtered", {
         params: {
@@ -58,7 +109,7 @@ const InsideMenu = ({ header }) => {
           pivotc: searchBy.pivotcuisine,
           pivott: searchBy.pivottype,
           priran: searchBy.priceRange,
-          naam:naam,
+          naam: naam,
         },
       });
       setMenus(res?.data?.data);
@@ -288,7 +339,7 @@ const InsideMenu = ({ header }) => {
                 <span className="text-lg font-bold">₹{menu.price}</span>
                 <button
                   type="button"
-                  onClick={() => handleAddToCart(menu._id)}
+                  onClick={() => handleAddToCart(menu._id, menu.restaurantID)}
                   disabled={!menu.availability}
                   className={`px-4 py-1.5 rounded-lg capitalize font-semibold text-white
               ${
@@ -302,6 +353,56 @@ const InsideMenu = ({ header }) => {
               </div>
             </div>
           ))}
+        </div>
+      </div>
+
+      <div>
+        <div className="fixed bottom-0 left-0 w-full z-50">
+          <div
+            className="max-w-5xl mx-auto mb-4 px-5 py-4 rounded-2xl shadow-lg flex items-center justify-between"
+            style={{
+              backgroundColor: "var(--color-primary)",
+              color: "white",
+            }}
+          >
+            {/* Left: Cart Info */}
+            <div className="flex flex-col">
+              <span
+                className="text-sm"
+                style={{ color: "var(--color-accent-soft)" }}
+              >
+                {badge} items in cart
+              </span>
+              <span className="text-lg font-semibold">₹590</span>
+            </div>
+
+            {/* Right: View Cart Button */}
+            <button
+              onClick={() => {
+                if (isLogin) {
+                  navigate("/add-to-cart");
+                } else {
+                  toast.error("Please login as customer to continue...");
+                  navigate("/login");
+                }
+              }}
+              className="px-5 py-2 rounded-xl font-semibold transition"
+              style={{
+                backgroundColor: "var(--color-secondary)",
+                color: "white",
+              }}
+              onMouseOver={(e) =>
+                (e.currentTarget.style.backgroundColor =
+                  "var(--color-secondary-hover)")
+              }
+              onMouseOut={(e) =>
+                (e.currentTarget.style.backgroundColor =
+                  "var(--color-secondary)")
+              }
+            >
+              View Cart →
+            </button>
+          </div>
         </div>
       </div>
     </>

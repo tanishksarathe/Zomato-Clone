@@ -13,9 +13,9 @@ const Home = () => {
   return (
     <>
       <div className="h-full bg-(--color-background) scroll-smooth">
-        {/* <video loop controls autoPlay muted className="h-[138vh] inset-0 w-full object-fill absolute">
+        <video loop controls autoPlay muted className="h-[138vh] inset-0 w-full object-fill absolute">
           <source src={adv} type="video/mp4"/>
-        </video> */}
+        </video>
         <Hero />
         <Features />
         <PopularRestaurants />

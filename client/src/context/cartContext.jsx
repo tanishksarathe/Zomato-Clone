@@ -18,3 +18,7 @@ export const CartProvider = ({children}) => {
 };
 
 export const useCart = () => useContext(CartContext);
+
+// view cart
+// add at a time
+// proceed to checkout model open

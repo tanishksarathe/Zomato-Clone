@@ -110,6 +110,8 @@ export const cartItemsList = async (req, res, next) => {
   try {
     const { list } = req.params;
 
+    console.log("Params : ",req.params)
+
     if (!list || list.length === 0) {
       res.status(404).json({ message: "Items not found" });
       return;
@@ -117,7 +119,7 @@ export const cartItemsList = async (req, res, next) => {
 
     const idArray = list.split(",") // because params m string aaegi, array ki comma separated values ke saath...
 
-    const cartItems = await Menu.find({ _id: { $in: idArray } });
+    const cartItems = await User.find({ _id: { $in: idArray } }).populate("menu");
 
     res.status(200).json({ message: "Cart Updates", data:cartItems });
   } catch (error) {

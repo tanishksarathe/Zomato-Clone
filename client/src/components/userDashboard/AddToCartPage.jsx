@@ -33,24 +33,40 @@ const AddToCartPage = () => {
 
       // map approach, yaha m local storage m id and quanity ko map kr dunga than O(n) time complexity se cheezo ko handle krunga
 
-      const localQuantity = {}; // map ready
+      const localRestaurants = {}; // map ready
 
       localCart.forEach((item) => {
-        localQuantity[item.menuItem] = item.quantity; // map filling
+        localRestaurants[item.resid] = item.existingItem; // map filling
       });
+
+      // console.log(localRestaurants); // debug
+
+      // now map of menu items with quantity
+
+      const mapMenuQuantity = {};
+
+      for (let resid in localRestaurants) {
+        const items = localRestaurants[resid];
+
+        items.forEach((item) => {
+          mapMenuQuantity[item.menuid] = item.quantity;
+        });
+      }
+
+      console.log(mapMenuQuantity);
 
       // now merge
 
-      const mergedCart = res?.data?.data.map((item) => {
-        return {
-          ...item,
-          quantity: localQuantity[item._id] || 1,
-        };
-      });
+      // const localQuantity = res?.data?.data.map((item) => {
+      //   return {
+      //     ...item,
+      //     quantity: localQuantity[item._id] || 1,
+      //   };
+      // });
 
-      setCart(mergedCart);
+      // setCart(mergedCart);
 
-      setBadge(mergedCart.length);
+      // setBadge(mergedCart.length);
     } catch (error) {
       console.log(error);
     }
@@ -101,7 +117,7 @@ const AddToCartPage = () => {
       JSON.parse(localStorage.getItem("AddToCart")) || [];
     setCartItems(parsedLocalStorageData);
 
-    const list = parsedLocalStorageData?.map((item) => item?.menuItem);
+    const list = parsedLocalStorageData?.map((item) => item?.resid);
 
     fetchCartItems(list, parsedLocalStorageData);
   }, []);
@@ -235,36 +251,49 @@ const AddToCartPage = () => {
               </div>
             ))}
           </div>
-          <section className="bg-(--color-surface) flex justify-between items-center p-5 px-10 my-5 border-t hover:shadow-2xs">
-            <div>
-              <p className="text-xl font-semibold text-(--color-text-primary)">
-                Total Amount
-              </p>
-              <p className="text-xl font-semibold text-(--color-primary)">
-                ₹{totalAmount()}
-              </p>
+        </div>
+      </div>
+      <div>
+        <div className="fixed bottom-0 left-0 w-full z-50">
+          <div
+            className="max-w-5xl mx-auto mb-4 px-5 py-4 rounded-2xl shadow-lg flex items-center justify-between"
+            style={{
+              backgroundColor: "var(--color-primary)",
+              color: "white",
+            }}
+          >
+            {/* Left: Cart Info */}
+            <div className="flex flex-col">
+              <span
+                className="text-sm"
+                style={{ color: "var(--color-accent-soft)" }}
+              >
+                {cart?.length} items in cart
+              </span>
+              <span className="text-lg font-semibold">₹{totalAmount()}</span>
             </div>
 
+            {/* Right: View Cart Button */}
             <button
-              // onClick={onCheckout}
-              className="px-8 py-3 rounded-xl font-semibold text-white text-lg transition"
+              className="px-5 py-2 rounded-xl font-semibold transition"
               style={{
-                backgroundColor: "var(--color-primary)",
+                backgroundColor: "var(--color-secondary)",
+                color: "white",
               }}
               onMouseOver={(e) =>
                 (e.currentTarget.style.backgroundColor =
-                  "var(--color-primary-hover)")
+                  "var(--color-secondary-hover)")
               }
               onMouseOut={(e) =>
-                (e.currentTarget.style.backgroundColor = "var(--color-primary)")
+                (e.currentTarget.style.backgroundColor =
+                  "var(--color-secondary)")
               }
             >
-              Buy Now
+              Buy Anyone
             </button>
-          </section>
+          </div>
         </div>
       </div>
-      {/* Footer Section Begins */}
     </>
   );
 };
