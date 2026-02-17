@@ -74,8 +74,8 @@ export const getFilteredMenu = async (req, res, next) => {
 
     // if naam is there
 
-    if (naam && naam !== undefined) {
-      query.dishName = naam;
+    if (naam && naam !== undefined && naam.trim() !== "") {
+      query.dishName = { $regex: naam.trim(), $options: "i" };
     }
 
     // if cuisine is there
@@ -110,18 +110,16 @@ export const cartItemsList = async (req, res, next) => {
   try {
     const { list } = req.params;
 
-    console.log("Params : ",req.params)
-
     if (!list || list.length === 0) {
       res.status(404).json({ message: "Items not found" });
       return;
     }
 
-    const idArray = list.split(",") // because params m string aaegi, array ki comma separated values ke saath...
+    const idArray = list.split(","); // because params m string aaegi, array ki comma separated values ke saath...
 
-    const cartItems = await User.find({ _id: { $in: idArray } }).populate("menu");
+    const cartItems = await Menu.find({ _id: { $in: idArray } });
 
-    res.status(200).json({ message: "Cart Updates", data:cartItems });
+    res.status(200).json({ message: "Cart Updates", data: cartItems });
   } catch (error) {
     next(error);
   }

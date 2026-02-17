@@ -4,6 +4,7 @@ const CartContext = createContext();
 
 export const CartProvider = ({children}) => {
   const [badge, setBadge] = useState(0);
+  const [totalAmt, setTotalAmt] = useState(0);
 
   useEffect(() => {
     const data = JSON.parse(localStorage.getItem("AddToCart")) || [];
@@ -11,7 +12,7 @@ export const CartProvider = ({children}) => {
   }, []);
 
   return (
-    <CartContext.Provider value={{ badge, setBadge }}>
+    <CartContext.Provider value={{ badge, setBadge, totalAmt, setTotalAmt }}>
       {children}
     </CartContext.Provider>
   );

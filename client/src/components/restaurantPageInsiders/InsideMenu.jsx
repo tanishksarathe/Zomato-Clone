@@ -4,6 +4,8 @@ import "./restaurantPage.css";
 import { useEffect, useState } from "react";
 import api from "../../config/API";
 import { useCart } from "../../context/cartContext";
+import {useAuth} from '../../context/AuthContext'
+import { useNavigate } from "react-router-dom";
 
 const InsideMenu = ({ header }) => {
   const [searchBy, setSearchBy] = useState({
@@ -12,7 +14,11 @@ const InsideMenu = ({ header }) => {
     priceRange: "",
   });
 
-  const { badge } = useCart();
+  const navigate = useNavigate();
+
+  const {isLogin} = useAuth()
+
+  const { badge, totalAmt } = useCart();
 
   const [naam, setNaam] = useState("");
 
@@ -60,7 +66,7 @@ const InsideMenu = ({ header }) => {
           ];
         }
       } else {
-        //  is restaurant is not found than make the restaurant field first and than add the menuitem array, add menu item, add quantity...
+        //  if restaurant is not found than make the restaurant field first and than add the menuitem array, add menu item, add quantity...
 
         existingCart = [
           ...existingCart,
@@ -76,25 +82,7 @@ const InsideMenu = ({ header }) => {
         ];
       }
 
-      /*
-      // agr existing item h to uski quantity bdha kr save kro if not than direct new item ki entry save krvao
-
-      if (existingItem) {
-        const updateCart = existingCart.map((item) =>
-          item.menuItem === menuItem
-            ? { ...item, quantity: item.quantity + 1 }
-            : item,
-        );
-        localStorage.setItem("AddToCart", JSON.stringify(updateCart));
-        toast.success("Added to Cart");
-      } else {
-        const updateCart = [...existingCart, { menuItem, quantity: 1 }];
-        localStorage.setItem("AddToCart", JSON.stringify(updateCart));
-        toast.success("Added to Cart");
-      }
-
-      */
-
+      toast.success("Added to Cart");
       localStorage.setItem("AddToCart", JSON.stringify(existingCart));
     } catch (error) {
       toast.error(error);
@@ -227,7 +215,7 @@ const InsideMenu = ({ header }) => {
               value={searchBy.naam}
               onChange={(e) =>
                 setTimeout(() => {
-                  setNaam((prev) => ({ ...prev, naam: e.target.value }));
+                  setNaam(e.target.value);
                 }, 3000)
               }
             />
@@ -373,7 +361,7 @@ const InsideMenu = ({ header }) => {
               >
                 {badge} items in cart
               </span>
-              <span className="text-lg font-semibold">₹590</span>
+              <span className="text-lg font-semibold">₹{totalAmt}</span>
             </div>
 
             {/* Right: View Cart Button */}
